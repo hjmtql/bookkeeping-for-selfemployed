@@ -1,5 +1,7 @@
 # Bookkeeping for self-employed
 
+[![Build Status](https://travis-ci.org/hjmtql/bookkeeping-for-selfemployed.svg?branch=master)](https://travis-ci.org/hjmtql/bookkeeping-for-selfemployed)
+
 Write troublesome double-entry bookkeeping programmatically!
 
 This library is strongly inspired by [Haskell bookkeeping-jp Sample](https://github.com/arowM/haskell-bookkeeping-jp-sample)
@@ -23,6 +25,10 @@ You can get csv outputs by running the following command
 yarn
 yarn test
 ```
+
+See the outputs
+
+- [gh-pages](https://github.com/hjmtql/bookkeeping-for-selfemployed/tree/gh-pages)
 
 ## Overview
 
