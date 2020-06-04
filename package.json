@@ -3,7 +3,7 @@
   "scripts": {
     "clean": "rimraf dist output .spago",
     "build": "spago build",
-    "test": "spago test"
+    "test": "spago -x test.dhall test"
   },
   "devDependencies": {
     "node-fs": "^0.1.7",

@@ -6,9 +6,9 @@ module Business.Bookkeeping.GeneralLedger
 
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
-import Business.Bookkeeping.Data.Date (Date)
 import Business.Bookkeeping.Journal (Journal)
 import Business.Bookkeeping.Type (Money)
+import Data.Date (Date)
 import Data.List as L
 import Data.Maybe (Maybe(..))
 

@@ -10,7 +10,7 @@ module Business.Bookkeeping.Transaction
   , single
   , multipleD
   , multipleC
-  , nes
+  , item
   ) where
 
 import Prelude
@@ -78,5 +78,5 @@ multipleC = tr <<< mkSlipC
 tr :: forall a. Slip a -> Transaction' (Slip a) Unit
 tr = tell <<< L.singleton
 
-nes :: forall a. a -> NE.NonEmptyList a
-nes = NE.singleton
+item :: forall a. a -> NE.NonEmptyList a
+item = NE.singleton

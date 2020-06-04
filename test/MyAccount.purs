@@ -4,13 +4,12 @@ import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
 import Business.Bookkeeping.Data.Category (Category(..))
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Show (genericShow)
 import Record.CSV.Printer.ToCSV (class ToCSV)
 
 -- 勘定科目
 data MyAccount
-  = Cash
-  | Bank
+  = WithdrawalsByOwner
+  | InvestmentsByOwner
   | Sales
   | Rent
   | Communication
@@ -21,8 +20,8 @@ data MyAccount
 
 -- 勘定科目の分類
 instance accountMyAccount :: Account MyAccount where
-  cat Cash = Assets
-  cat Bank = Assets
+  cat WithdrawalsByOwner = Assets
+  cat InvestmentsByOwner = Liabilities
   cat Sales = Revenue
   cat Rent = Expenses
   cat Communication = Expenses
@@ -33,8 +32,8 @@ instance accountMyAccount :: Account MyAccount where
 
 -- CSV出力時の名称
 instance toCSVMyAccount :: ToCSV MyAccount where
-  toCSV Cash = "現金"
-  toCSV Bank = "預金"
+  toCSV WithdrawalsByOwner = "事業主貸"
+  toCSV InvestmentsByOwner = "事業主借"
   toCSV Sales = "売上"
   toCSV Rent = "地代家賃"
   toCSV Communication = "通信費"
@@ -46,6 +45,3 @@ instance toCSVMyAccount :: ToCSV MyAccount where
 derive instance eqMyAccount :: Eq MyAccount
 
 derive instance geneticMyAccount :: Generic MyAccount _
-
-instance showMyAccount :: Show MyAccount where
-  show = genericShow
