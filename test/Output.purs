@@ -21,7 +21,7 @@ import Test.PathName (pathName)
 
 outputJournal :: L.List (Journal MyAccount) -> Effect Unit
 outputJournal js = do
-  out <- effEither $ printCSVWithOrder myjs journalOrder
+  out <- effEither $ printCSVWithOrder journalOrder myjs
   orMkDir paths.top
   S.writeTextFile
     UTF8
@@ -39,7 +39,7 @@ outputLedger gs = do
   for_ gs \g -> do
     let
       myls = map fromLedger g.ledgers
-    out <- effEither $ printCSVWithOrder myls ledgerOrder
+    out <- effEither $ printCSVWithOrder ledgerOrder myls
     S.writeTextFile
       UTF8
       (pathJoin [ paths.top, paths.sub, pathName (cat g.account), pathName g.account <> ".csv" ])

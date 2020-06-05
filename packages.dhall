@@ -6,15 +6,16 @@ let overrides = {=}
 let additions =
   { record-csv =
       { dependencies =
-          [ "numbers"
+          [ "free"
+          , "numbers"
+          , "parsing"
           , "record"
-          , "string-parsers"
           , "typelevel-prelude"
           ]
       , repo =
           "https://github.com/hjmtql/purescript-record-csv"
       , version =
-          "v0.1.0"
+          "v0.1.1"
       }
   }
 
