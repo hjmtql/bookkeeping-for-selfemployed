@@ -37,7 +37,7 @@ mkJournals =
   dateMod t =
     ( case eDate of
         Right date -> Right <<< Record.insert (SProxy :: SProxy "date") date
-        Left err -> const $ Left err
+        Left err -> \_ -> Left err
     )
       <<< Record.delete (SProxy :: SProxy "year")
       <<< Record.delete (SProxy :: SProxy "month")
@@ -45,12 +45,11 @@ mkJournals =
       $ t
     where
     eDate =
-      note ("Invalid Date " <> dateString <> ".")
-        <<< join
-        $ exactDate
-        <$> toEnum t.year
-        <*> toEnum t.month
-        <*> toEnum t.day
+      note ("Invalid Date " <> dateString <> ".") do
+        y <- toEnum t.year
+        m <- toEnum t.month
+        d <- toEnum t.day
+        exactDate y m d
 
     dateString = joinWith "/" $ map show [ t.year, t.month, t.day ]
 
