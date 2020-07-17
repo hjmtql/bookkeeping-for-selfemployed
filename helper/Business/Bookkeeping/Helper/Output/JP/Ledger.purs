@@ -1,22 +1,22 @@
-module Test.MyLedger where
+module Business.Bookkeeping.Helper.Output.JP.Ledger where
 
+import Business.Bookkeeping.Class.Account (class Account)
 import Business.Bookkeeping.GeneralLedger (Ledger)
-import Record.CSV.Printer.SList (type (!), type (:), SLProxy(..))
+import Business.Bookkeeping.Helper.Output.Date (Date, fromDate)
 import Data.Maybe (Maybe)
-import Test.MyAccount (MyAccount)
-import Test.MyDate (MyDate, fromDate)
+import Record.CSV.Printer.SList (type (!), type (:), SLProxy(..))
 
 -- CSV出力時の総勘定元帳列
-type MyLedger
+type JPLedger a
   = { "No" :: Int
-    , "日付" :: MyDate
+    , "日付" :: Date
     , "摘要" :: String
-    , "勘定科目" :: MyAccount
+    , "勘定科目" :: a
     , "借方金額" :: Maybe Int
     , "貸方金額" :: Maybe Int
     }
 
-fromLedger :: Ledger MyAccount -> MyLedger
+fromLedger :: forall a. Account a => Ledger a -> JPLedger a
 fromLedger l =
   { "No": l.no
   , "日付": fromDate l.date
@@ -27,7 +27,7 @@ fromLedger l =
   }
 
 -- CSV出力時の総勘定元帳列の順番
-type LedgerHeaderOrder
+type JPLedgerHeaderOrder
   = "No"
       : "日付"
       : "摘要"
@@ -35,5 +35,5 @@ type LedgerHeaderOrder
       : "借方金額"
       ! "貸方金額"
 
-ledgerOrder :: SLProxy LedgerHeaderOrder
+ledgerOrder :: SLProxy JPLedgerHeaderOrder
 ledgerOrder = SLProxy

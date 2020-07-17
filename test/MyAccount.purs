@@ -3,7 +3,14 @@ module Test.MyAccount where
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
 import Business.Bookkeeping.Data.Category (Category(..))
+import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)
+import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput)
+import Business.Bookkeeping.Helper.Output.JP.Journal (fromJournal, journalOrder) as JP
+import Business.Bookkeeping.Helper.Output.JP.Ledger (fromLedger, ledgerOrder) as JP
+import Business.Bookkeeping.Helper.PathName (class PathName)
 import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep.Show (genericShow)
+import Record.CSV.Printer (printCSVWithOrder)
 import Record.CSV.Printer.ToCSV (class ToCSV)
 
 -- 勘定科目
@@ -45,3 +52,15 @@ instance toCSVMyAccount :: ToCSV MyAccount where
 derive instance eqMyAccount :: Eq MyAccount
 
 derive instance geneticMyAccount :: Generic MyAccount _
+
+-- 総勘定元帳CSV出力時のファイル名
+instance pathNameMyAccount :: PathName MyAccount where
+  pathName = genericShow
+
+-- 仕訳帳CSV出力時の設定
+instance journalOutputMyAccount :: JournalOutput MyAccount where
+  printJournal = printCSVWithOrder JP.journalOrder <<< map JP.fromJournal
+
+-- 総勘定元帳CSV出力時の設定
+instance ledgerOutputMyAccount :: LedgerOutput MyAccount where
+  printLedger = printCSVWithOrder JP.ledgerOrder <<< map JP.fromLedger

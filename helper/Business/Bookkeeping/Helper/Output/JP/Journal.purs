@@ -1,21 +1,21 @@
-module Test.MyJournal where
+module Business.Bookkeeping.Helper.Output.JP.Journal where
 
+import Business.Bookkeeping.Class.Account (class Account)
+import Business.Bookkeeping.Helper.Output.Date (Date, fromDate)
 import Business.Bookkeeping.Journal (Journal)
 import Record.CSV.Printer.SList (type (!), type (:), SLProxy(..))
-import Test.MyAccount (MyAccount)
-import Test.MyDate (MyDate, fromDate)
 
 -- CSV出力時の仕訳帳列
-type MyJournal
+type JPJournal a
   = { "No" :: Int
-    , "日付" :: MyDate
+    , "日付" :: Date
     , "摘要" :: String
-    , "借方勘定科目" :: MyAccount
-    , "貸方勘定科目" :: MyAccount
+    , "借方勘定科目" :: a
+    , "貸方勘定科目" :: a
     , "金額" :: Int
     }
 
-fromJournal :: Journal MyAccount -> MyJournal
+fromJournal :: forall a. Account a => Journal a -> JPJournal a
 fromJournal j =
   { "No": j.no
   , "日付": fromDate j.date
@@ -26,7 +26,7 @@ fromJournal j =
   }
 
 -- CSV出力時の仕訳帳列の順番
-type JournalHeaderOrder
+type JPJournalHeaderOrder
   = "No"
       : "日付"
       : "摘要"
@@ -34,5 +34,5 @@ type JournalHeaderOrder
       : "貸方勘定科目"
       ! "金額"
 
-journalOrder :: SLProxy JournalHeaderOrder
+journalOrder :: SLProxy JPJournalHeaderOrder
 journalOrder = SLProxy

@@ -1,9 +1,12 @@
-module Test.Output where
+module Business.Bookkeeping.Helper.Output where
 
 import Prelude
-import Business.Bookkeeping.Class.Account (cat)
+import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Data.Category (categories)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
+import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput, printJournal)
+import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput, printLedger)
+import Business.Bookkeeping.Helper.PathName (class PathName, pathName)
 import Business.Bookkeeping.Journal (Journal)
 import Data.Either (Either(..))
 import Data.Foldable (for_)
@@ -13,33 +16,32 @@ import Effect (Effect)
 import Effect.Exception (throw)
 import Node.Encoding (Encoding(..))
 import Node.FS.Sync as S
-import Record.CSV.Printer (printCSVWithOrder)
-import Test.MyAccount (MyAccount)
-import Test.MyJournal (fromJournal, journalOrder)
-import Test.MyLedger (fromLedger, ledgerOrder)
-import Test.PathName (pathName)
 
-outputJournal :: L.List (Journal MyAccount) -> Effect Unit
+outputJournal ::
+  forall a.
+  JournalOutput a =>
+  L.List (Journal a) -> Effect Unit
 outputJournal js = do
-  out <- effEither $ printCSVWithOrder journalOrder myjs
+  out <- effEither $ printJournal js
   orMkDir paths.top
   S.writeTextFile
     UTF8
     (pathJoin [ paths.top, "journal.csv" ])
     out
-  where
-  myjs = map fromJournal js
 
-outputLedger :: L.List (GeneralLedger MyAccount) -> Effect Unit
+outputLedger ::
+  forall a.
+  LedgerOutput a =>
+  Account a =>
+  PathName a =>
+  L.List (GeneralLedger a) -> Effect Unit
 outputLedger gs = do
   orMkDir paths.top
   orMkDir $ pathJoin [ paths.top, paths.sub ]
   for_ categories \c ->
     orMkDir $ pathJoin [ paths.top, paths.sub, pathName c ]
   for_ gs \g -> do
-    let
-      myls = map fromLedger g.ledgers
-    out <- effEither $ printCSVWithOrder ledgerOrder myls
+    out <- effEither $ printLedger g.ledgers
     S.writeTextFile
       UTF8
       (pathJoin [ paths.top, paths.sub, pathName (cat g.account), pathName g.account <> ".csv" ])
