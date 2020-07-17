@@ -10,6 +10,11 @@ let additions =
         , repo = "https://github.com/hjmtql/purescript-record-csv"
         , version = "v0.1.1"
         }
+      , sumtype-helper = 
+        { dependencies = [] : List Text
+        , repo = "https://github.com/hjmtql/purescript-sumtype-helper.git"
+        , version = "v0.0.0"
+        }
       }
 
 in  upstream // overrides // additions

@@ -1,9 +1,9 @@
 module Business.Bookkeeping.Data.Category where
 
 import Prelude
-import Business.Bookkeeping.Util (candidates)
 import Data.Generic.Rep (class Generic)
 import Data.List as L
+import Data.Sum.Helper (candidates)
 
 -- 勘定科目の分類
 data Category
@@ -18,4 +18,4 @@ derive instance eqCategory :: Eq Category
 derive instance geneticCategory :: Generic Category _
 
 categories :: L.List Category
-categories = candidates
+categories = L.fromFoldable candidates
