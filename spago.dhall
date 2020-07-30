@@ -2,7 +2,9 @@
 , dependencies =
   [ "datetime"
   , "generics-rep"
+  , "node-fs"
   , "record"
+  , "record-csv"
   , "strings"
   , "sumtype-helper"
   , "transformers"
