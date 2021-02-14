@@ -78,8 +78,8 @@ mkJournals =
                 MultipleC c ->
                   NE.toList
                     $ mapFlipped c.credits \item ->
-                        { debitAccount: item.account
-                        , creditAccount: c.debit
+                        { debitAccount: c.debit
+                        , creditAccount: item.account
                         , amount: item.amount
                         }
           )
