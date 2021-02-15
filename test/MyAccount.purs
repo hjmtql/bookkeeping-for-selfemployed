@@ -3,7 +3,7 @@ module Test.MyAccount where
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
 import Business.Bookkeeping.Helper.Output.AccountSummary (class AccountSummaryOutput)
-import Business.Bookkeeping.Helper.Output.JP.AccountSummary (fromAccountSummary, accountSummaryOrder) as JP
+import Business.Bookkeeping.Helper.Output.JP.AccountSummary (accountSummaryOrder, fromAccountSummary) as JP
 import Business.Bookkeeping.Helper.Output.JP.Journal (fromJournal, journalOrder) as JP
 import Business.Bookkeeping.Helper.Output.JP.Ledger (fromLedger, ledgerOrder) as JP
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)

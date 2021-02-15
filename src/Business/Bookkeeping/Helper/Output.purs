@@ -2,10 +2,12 @@ module Business.Bookkeeping.Helper.Output where
 
 import Prelude
 import Business.Bookkeeping.AccountSummary (AccountSummary)
+import Business.Bookkeeping.CategorySummary (CategorySummary)
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (categories)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Business.Bookkeeping.Helper.Output.AccountSummary (class AccountSummaryOutput, printAccountSummary)
+import Business.Bookkeeping.Helper.Output.CategorySummary (class CategorySummaryOutput, printCategorySummary)
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput, printJournal)
 import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput, printLedger)
 import Business.Bookkeeping.Helper.PathName (class PathName, pathName)
@@ -67,6 +69,19 @@ outputAccountSummary ass = do
   S.writeTextFile
     UTF8
     (pathJoin [ paths.top, paths.sum, "account.csv" ])
+    out
+
+outputCategorySummary ::
+  forall c.
+  CategorySummaryOutput c =>
+  L.List (CategorySummary c) -> Effect Unit
+outputCategorySummary css = do
+  out <- effEither $ printCategorySummary css
+  orMkDir paths.top
+  orMkDir $ pathJoin [ paths.top, paths.sum ]
+  S.writeTextFile
+    UTF8
+    (pathJoin [ paths.top, paths.sum, "category.csv" ])
     out
 
 effEither :: forall a b. Show a => Either a b -> Effect b

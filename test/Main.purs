@@ -2,7 +2,8 @@ module Test.Main where
 
 import Prelude
 import Business.Bookkeeping.AccountSummary (mkAccountSummary)
-import Business.Bookkeeping.Helper.Output (effEither, outputAccountSummary, outputJournal, outputLedger)
+import Business.Bookkeeping.CategorySummary (mkCategorySummary)
+import Business.Bookkeeping.Helper.Output (effEither, outputAccountSummary, outputCategorySummary, outputJournal, outputLedger)
 import Business.Bookkeeping.Run (generateJournal, generateLedger)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
 import Effect (Effect)
@@ -52,14 +53,18 @@ transaction =
         , amount: amount
         }
 
--- 仕訳帳と総勘定元帳のCSV出力
 main :: Effect Unit
 main = do
-  js <- effEither $ generateJournal transaction
+  -- 仕訳帳と総勘定元帳のCSV出力
+  journals <- effEither $ generateJournal transaction
   let
-    ls = generateLedger js
+    generalLedgers = generateLedger journals
+  outputJournal journals
+  outputLedger generalLedgers
+  -- 確定申告用の合計金額CSV出力
+  let
+    accountSummaries = mkAccountSummary generalLedgers
 
-    ass = mkAccountSummary ls
-  outputJournal js
-  outputLedger ls
-  outputAccountSummary ass
+    categorySummaries = mkCategorySummary generalLedgers
+  outputAccountSummary accountSummaries
+  outputCategorySummary categorySummaries
