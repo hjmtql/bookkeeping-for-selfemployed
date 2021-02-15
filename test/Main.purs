@@ -1,7 +1,8 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger)
+import Business.Bookkeeping.AccountSummary (mkAccountSummary)
+import Business.Bookkeeping.Helper.Output (effEither, outputAccountSummary, outputJournal, outputLedger)
 import Business.Bookkeeping.Run (generateJournal, generateLedger)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
 import Effect (Effect)
@@ -57,5 +58,8 @@ main = do
   js <- effEither $ generateJournal transaction
   let
     ls = generateLedger js
+
+    ass = mkAccountSummary ls
   outputJournal js
   outputLedger ls
+  outputAccountSummary ass

@@ -3,10 +3,12 @@ module Test.MyAccount where
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
 import Business.Bookkeeping.Data.Category (Category(..))
-import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)
-import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput)
+import Business.Bookkeeping.Helper.Output.AccountSummary (class AccountSummaryOutput)
+import Business.Bookkeeping.Helper.Output.JP.AccountSummary (fromAccountSummary, accountSummaryOrder) as JP
 import Business.Bookkeeping.Helper.Output.JP.Journal (fromJournal, journalOrder) as JP
 import Business.Bookkeeping.Helper.Output.JP.Ledger (fromLedger, ledgerOrder) as JP
+import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)
+import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput)
 import Business.Bookkeeping.Helper.PathName (class PathName)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
@@ -64,3 +66,7 @@ instance journalOutputMyAccount :: JournalOutput MyAccount where
 -- 総勘定元帳CSV出力時の設定
 instance ledgerOutputMyAccount :: LedgerOutput MyAccount where
   printLedger = printCSVWithOrder JP.ledgerOrder <<< map JP.fromLedger
+
+-- 総勘定元帳CSV出力時の設定
+instance accountSummaryOutputMyAccount :: AccountSummaryOutput MyAccount where
+  printAccountSummary = printCSVWithOrder JP.accountSummaryOrder <<< map JP.fromAccountSummary
