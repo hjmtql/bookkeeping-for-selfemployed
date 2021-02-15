@@ -11,6 +11,7 @@ This library is strongly inspired by [Haskell bookkeeping-jp Sample](https://git
 - Automatic serial number in date order
 - 1to1 and 1toN compound entry
 - Journal and general ledger csv output
+- Trial balance and its monthly csv output
 
 ## Usage
 
@@ -47,21 +48,34 @@ Then you will get csv files
 ```
 dist
 ├── journal.csv
-└── ledger
-    ├── Assets
-    │   └── WithdrawalsByOwner.csv
-    ├── Expenses
-    │   ├── Commission.csv
-    │   ├── Communication.csv
-    │   ├── Rent.csv
-    │   ├── Supplies.csv
-    │   ├── Travel.csv
-    │   └── Utilities.csv
-    ├── Liabilities
-    │   └── InvestmentsByOwner.csv
-    ├── Revenue
-    │   └── Sales.csv
-    └── Stock
+├── ledger
+│   ├── Assets
+│   │   └── WithdrawalsByOwner.csv
+│   ├── Expenses
+│   │   ├── Commission.csv
+│   │   ├── Communication.csv
+│   │   ├── Rent.csv
+│   │   ├── Supplies.csv
+│   │   ├── Travel.csv
+│   │   └── Utilities.csv
+│   ├── Liabilities
+│   ├── Revenue
+│   │   └── Sales.csv
+│   └── Stock
+└── summary
+    ├── monthly
+    │   ├── 1
+    │   │   ├── trialbalance.csv
+    │   │   └── trialbalancesummary.csv
+    │   ├── 2
+    │   │   ├── trialbalance.csv
+    │   │   └── trialbalancesummary.csv
+   ... ...
+    │   └── 12
+    │       ├── trialbalance.csv
+    │       └── trialbalancesummary.csv
+    ├── trialbalance.csv
+    └── trialbalancesummary.csv
 ```
 
 Contents like below
@@ -69,13 +83,13 @@ Contents like below
 dist/journal.csv
 ```
 No,日付,摘要,借方勘定科目,貸方勘定科目,金額
-1,2020/1/25,"家賃按分5割1月分",地代家賃,事業主借,25000
-2,2020/2/15,"名刺作成",消耗品費,事業主借,5000
-2,2020/2/15,"名刺作成",支払手数料,事業主借,200
+1,2020/1/25,"家賃按分5割1月分",地代家賃,事業主貸,25000
+2,2020/2/15,"名刺作成",消耗品費,事業主貸,5000
+2,2020/2/15,"名刺作成",支払手数料,事業主貸,200
 3,2020/2/20,"xxxコーディング",事業主貸,売上,100000
-4,2020/2/25,"家賃按分5割2月分",地代家賃,事業主借,25000
+4,2020/2/25,"家賃按分5割2月分",地代家賃,事業主貸,25000
 5,2020/3/10,"yyyサーバー構築",事業主貸,売上,200000
-6,2020/3/25,"家賃按分5割3月分",地代家賃,事業主借,25000
+6,2020/3/25,"家賃按分5割3月分",地代家賃,事業主貸,25000
 ```
 
 dist/ledger/Revenue/Sales.csv
@@ -88,6 +102,11 @@ No,日付,摘要,勘定科目,借方金額,貸方金額
 dist/ledger/Assets/WithdrawalsByOwner.csv
 ```
 No,日付,摘要,勘定科目,借方金額,貸方金額
+1,2020/1/25,"家賃按分5割1月分",地代家賃,,25000
+2,2020/2/15,"名刺作成",消耗品費,,5000
+2,2020/2/15,"名刺作成",支払手数料,,200
 3,2020/2/20,"xxxコーディング",売上,100000,
+4,2020/2/25,"家賃按分5割2月分",地代家賃,,25000
 5,2020/3/10,"yyyサーバー構築",売上,200000,
+6,2020/3/25,"家賃按分5割3月分",地代家賃,,25000
 ```
