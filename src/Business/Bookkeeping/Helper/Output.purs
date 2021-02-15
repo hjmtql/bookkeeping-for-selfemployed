@@ -34,10 +34,10 @@ outputJournal ::
   L.List (Journal a) -> Effect Unit
 outputJournal js = do
   out <- effEither $ printJournal js
-  orMkDir paths.top
+  orMkDir dirs.dist
   S.writeTextFile
     UTF8
-    (pathJoin [ paths.top, "journal.csv" ])
+    (pathJoin [ dirs.dist, "journal.csv" ])
     out
 
 outputLedger ::
@@ -51,15 +51,15 @@ outputLedger ::
   GenericEnum rep =>
   L.List (GeneralLedger a) -> Effect Unit
 outputLedger gs = do
-  orMkDir paths.top
-  orMkDir $ pathJoin [ paths.top, paths.sub ]
+  orMkDir dirs.dist
+  orMkDir dirs.ledger
   for_ (categories :: L.List c) \c ->
-    orMkDir $ pathJoin [ paths.top, paths.sub, pathName c ]
+    orMkDir $ pathJoin [ dirs.ledger, pathName c ]
   for_ gs \g -> do
     out <- effEither $ printLedger g.ledgers
     S.writeTextFile
       UTF8
-      (pathJoin [ paths.top, paths.sub, pathName (cat g.account), pathName g.account <> ".csv" ])
+      (pathJoin [ dirs.ledger, pathName (cat g.account), pathName g.account <> ".csv" ])
       out
 
 outputTrialBalance ::
@@ -68,11 +68,11 @@ outputTrialBalance ::
   L.List (TrialBalance a) -> Effect Unit
 outputTrialBalance tbs = do
   out <- effEither $ printTrialBalance tbs
-  orMkDir paths.top
-  orMkDir $ pathJoin [ paths.top, paths.sum ]
+  orMkDir dirs.dist
+  orMkDir dirs.summary
   S.writeTextFile
     UTF8
-    (pathJoin [ paths.top, paths.sum, "trialbalance.csv" ])
+    (pathJoin [ dirs.summary, "trialbalance.csv" ])
     out
 
 outputTrialBalanceSummary ::
@@ -81,11 +81,11 @@ outputTrialBalanceSummary ::
   L.List (TrialBalanceSummary c) -> Effect Unit
 outputTrialBalanceSummary tbss = do
   out <- effEither $ printTrialBalanceSummary tbss
-  orMkDir paths.top
-  orMkDir $ pathJoin [ paths.top, paths.sum ]
+  orMkDir dirs.dist
+  orMkDir dirs.summary
   S.writeTextFile
     UTF8
-    (pathJoin [ paths.top, paths.sum, "trialbalancesummary.csv" ])
+    (pathJoin [ dirs.summary, "trialbalancesummary.csv" ])
     out
 
 outputMonthlyTrialBalance ::
@@ -93,16 +93,16 @@ outputMonthlyTrialBalance ::
   TrialBalanceOutput a =>
   L.List (MonthlyTrialBalance a) -> Effect Unit
 outputMonthlyTrialBalance mtbs = do
-  orMkDir paths.top
-  orMkDir $ pathJoin [ paths.top, paths.sum ]
-  orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly ]
+  orMkDir dirs.dist
+  orMkDir dirs.summary
+  orMkDir dirs.monthly
   for_ monthes \m ->
-    orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum m) ]
+    orMkDir $ pathJoin [ dirs.monthly, show (fromEnum m) ]
   for_ mtbs \mtb -> do
     out <- effEither $ printTrialBalance mtb.balances
     S.writeTextFile
       UTF8
-      (pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum mtb.month), "trialbalance.csv" ])
+      (pathJoin [ dirs.monthly, show (fromEnum mtb.month), "trialbalance.csv" ])
       out
 
 outputMonthlyTrialBalanceSummary ::
@@ -110,16 +110,16 @@ outputMonthlyTrialBalanceSummary ::
   TrialBalanceSummaryOutput c =>
   L.List (MonthlyTrialBalanceSummary c) -> Effect Unit
 outputMonthlyTrialBalanceSummary mtbss = do
-  orMkDir paths.top
-  orMkDir $ pathJoin [ paths.top, paths.sum ]
-  orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly ]
+  orMkDir dirs.dist
+  orMkDir dirs.summary
+  orMkDir dirs.monthly
   for_ monthes \m ->
-    orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum m) ]
+    orMkDir $ pathJoin [ dirs.monthly, show (fromEnum m) ]
   for_ mtbss \mtbs -> do
     out <- effEither $ printTrialBalanceSummary mtbs.balances
     S.writeTextFile
       UTF8
-      (pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum mtbs.month), "trialbalancesummary.csv" ])
+      (pathJoin [ dirs.monthly, show (fromEnum mtbs.month), "trialbalancesummary.csv" ])
       out
 
 effEither :: forall a b. Show a => Either a b -> Effect b
@@ -135,15 +135,28 @@ orMkDir path = do
 pathJoin :: Array String -> String
 pathJoin = joinWith "/"
 
-paths ::
-  { top :: String
-  , sub :: String
-  , sum :: String
+pathFlags ::
+  { dist :: String
+  , ledger :: String
+  , summary :: String
   , monthly :: String
   }
-paths =
-  { top: "dist"
-  , sub: "ledger"
-  , sum: "summary"
+pathFlags =
+  { dist: "dist"
+  , ledger: "ledger"
+  , summary: "summary"
   , monthly: "monthly"
+  }
+
+dirs ::
+  { dist :: String
+  , ledger :: String
+  , monthly :: String
+  , summary :: String
+  }
+dirs =
+  { dist: pathFlags.dist
+  , ledger: pathJoin [ pathFlags.dist, pathFlags.ledger ]
+  , summary: pathJoin [ pathFlags.dist, pathFlags.summary ]
+  , monthly: pathJoin [ pathFlags.dist, pathFlags.summary, pathFlags.monthly ]
   }
