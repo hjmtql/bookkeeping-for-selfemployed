@@ -15,7 +15,7 @@ type ENLedger a
     , "Credit Amount" :: Maybe Int
     }
 
-fromLedger :: forall a. Account a => Ledger a -> ENLedger a
+fromLedger :: forall c a. Account c a => Ledger a -> ENLedger a
 fromLedger l =
   { "No": l.no
   , "Date": fromDate l.date

@@ -5,7 +5,7 @@ module Business.Bookkeeping.Class.Account
   ) where
 
 import Prelude
-import Business.Bookkeeping.Data.Category (Category)
+import Business.Bookkeeping.Class.Category (class AccountCategory)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Bounded (class GenericBottom)
 import Data.Generic.Rep.Enum (class GenericEnum)
@@ -14,14 +14,16 @@ import Data.Sum.Helper (candidates)
 
 -- 勘定科目
 class
-  Eq a <= Account a where
-  cat :: a -> Category
+  ( AccountCategory c
+  , Eq a
+  ) <= Account c a | a -> c where
+  cat :: a -> c
 
 accounts ::
-  forall a b.
-  Generic a b =>
-  GenericBottom b =>
-  GenericEnum b =>
-  Account a =>
+  forall c a rep.
+  Generic a rep =>
+  GenericBottom rep =>
+  GenericEnum rep =>
+  Account c a =>
   L.List a
 accounts = L.fromFoldable candidates

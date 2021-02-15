@@ -16,7 +16,7 @@ type JPLedger a
     , "貸方金額" :: Maybe Int
     }
 
-fromLedger :: forall a. Account a => Ledger a -> JPLedger a
+fromLedger :: forall c a. Account c a => Ledger a -> JPLedger a
 fromLedger l =
   { "No": l.no
   , "日付": fromDate l.date

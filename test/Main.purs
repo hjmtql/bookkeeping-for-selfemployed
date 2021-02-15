@@ -1,9 +1,11 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger)
+import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger, outputTrialBalance, outputTrialBalanceSummary)
 import Business.Bookkeeping.Run (generateJournal, generateLedger)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
+import Business.Bookkeeping.TrialBalance (mkTrialBalance)
+import Business.Bookkeeping.TrialBalanceSummary (mkTrialBalanceSummary)
 import Effect (Effect)
 import Test.MyAccount (MyAccount(..))
 
@@ -51,11 +53,18 @@ transaction =
         , amount: amount
         }
 
--- 仕訳帳と総勘定元帳のCSV出力
 main :: Effect Unit
 main = do
-  js <- effEither $ generateJournal transaction
+  -- 仕訳帳と総勘定元帳のCSV出力
+  journals <- effEither $ generateJournal transaction
   let
-    ls = generateLedger js
-  outputJournal js
-  outputLedger ls
+    generalLedgers = generateLedger journals
+  outputJournal journals
+  outputLedger generalLedgers
+  -- 確定申告用の合計金額CSV出力
+  let
+    trialBalance = mkTrialBalance generalLedgers
+
+    trialBalanceSummary = mkTrialBalanceSummary trialBalance
+  outputTrialBalance trialBalance
+  outputTrialBalanceSummary trialBalanceSummary

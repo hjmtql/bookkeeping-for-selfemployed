@@ -2,16 +2,18 @@ module Test.MyAccount where
 
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
-import Business.Bookkeeping.Data.Category (Category(..))
-import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)
-import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput)
 import Business.Bookkeeping.Helper.Output.JP.Journal (fromJournal, journalOrder) as JP
 import Business.Bookkeeping.Helper.Output.JP.Ledger (fromLedger, ledgerOrder) as JP
+import Business.Bookkeeping.Helper.Output.JP.TrialBalance (fromTrialBalance, trialBalanceOrder) as JP
+import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)
+import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput)
+import Business.Bookkeeping.Helper.Output.TrialBalance (class TrialBalanceOutput)
 import Business.Bookkeeping.Helper.PathName (class PathName)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Record.CSV.Printer (printCSVWithOrder)
 import Record.CSV.Printer.ToCSV (class ToCSV)
+import Test.MyCategory (MyCategory(..))
 
 -- 勘定科目
 data MyAccount
@@ -25,8 +27,12 @@ data MyAccount
   | Supplies
   | Commission
 
+derive instance eqMyAccount :: Eq MyAccount
+
+derive instance geneticMyAccount :: Generic MyAccount _
+
 -- 勘定科目の分類
-instance accountMyAccount :: Account MyAccount where
+instance accountMyAccount :: Account MyCategory MyAccount where
   cat WithdrawalsByOwner = Assets
   cat InvestmentsByOwner = Liabilities
   cat Sales = Revenue
@@ -49,10 +55,6 @@ instance toCSVMyAccount :: ToCSV MyAccount where
   toCSV Supplies = "消耗品費"
   toCSV Commission = "支払手数料"
 
-derive instance eqMyAccount :: Eq MyAccount
-
-derive instance geneticMyAccount :: Generic MyAccount _
-
 -- 総勘定元帳CSV出力時のファイル名
 instance pathNameMyAccount :: PathName MyAccount where
   pathName = genericShow
@@ -64,3 +66,7 @@ instance journalOutputMyAccount :: JournalOutput MyAccount where
 -- 総勘定元帳CSV出力時の設定
 instance ledgerOutputMyAccount :: LedgerOutput MyAccount where
   printLedger = printCSVWithOrder JP.ledgerOrder <<< map JP.fromLedger
+
+-- 合計残高試算表CSV出力時の設定
+instance trialBalanceOutputMyAccount :: TrialBalanceOutput MyAccount where
+  printTrialBalance = printCSVWithOrder JP.trialBalanceOrder <<< map JP.fromTrialBalance

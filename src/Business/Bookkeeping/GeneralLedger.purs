@@ -27,7 +27,7 @@ type Ledger a
     , creditAmount :: Maybe Money
     }
 
-mkGeneralLedger :: forall a. Account a => a -> L.List (Journal a) -> GeneralLedger a
+mkGeneralLedger :: forall a c. Account c a => a -> L.List (Journal a) -> GeneralLedger a
 mkGeneralLedger a js = { account: a, ledgers: ls }
   where
   ls = L.sortBy (comparing _.no) $ ds <> cs

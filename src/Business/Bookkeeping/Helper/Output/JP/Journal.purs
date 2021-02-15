@@ -15,7 +15,7 @@ type JPJournal a
     , "金額" :: Int
     }
 
-fromJournal :: forall a. Account a => Journal a -> JPJournal a
+fromJournal :: forall c a. Account c a => Journal a -> JPJournal a
 fromJournal j =
   { "No": j.no
   , "日付": fromDate j.date
