@@ -24,7 +24,7 @@ transaction =
           , debits:
               item { account: Supplies, amount: 5_000 }
                 <> item { account: Commission, amount: 200 }
-          , credit: InvestmentsByOwner
+          , credit: WithdrawalsByOwner
           }
       day 20 do
         sales "xxxコーディング" 100_000
@@ -51,7 +51,7 @@ transaction =
       single
         { summary: "家賃按分5割" <> when
         , debit: Rent
-        , credit: InvestmentsByOwner
+        , credit: WithdrawalsByOwner
         , amount: amount
         }
 
@@ -67,11 +67,11 @@ main = do
   let
     trialBalance = mkTrialBalance generalLedgers
 
-    trialBalanceSummary = mkTrialBalanceSummary trialBalance
+    trialBalanceSummary = mkTrialBalanceSummary generalLedgers
 
     monthlyTrialBalance = mkMonthlyTrialBalance generalLedgers
 
-    monthlyTrialBalanceSummary = mkMonthlyTrialBalanceSummary monthlyTrialBalance
+    monthlyTrialBalanceSummary = mkMonthlyTrialBalanceSummary generalLedgers
   outputTrialBalance trialBalance
   outputTrialBalanceSummary trialBalanceSummary
   outputMonthlyTrialBalance monthlyTrialBalance

@@ -18,7 +18,6 @@ import Test.MyCategory (MyCategory(..))
 -- 勘定科目
 data MyAccount
   = WithdrawalsByOwner
-  | InvestmentsByOwner
   | Sales
   | Rent
   | Communication
@@ -34,7 +33,6 @@ derive instance geneticMyAccount :: Generic MyAccount _
 -- 勘定科目の分類
 instance accountMyAccount :: Account MyCategory MyAccount where
   cat WithdrawalsByOwner = Assets
-  cat InvestmentsByOwner = Liabilities
   cat Sales = Revenue
   cat Rent = Expenses
   cat Communication = Expenses
@@ -46,7 +44,6 @@ instance accountMyAccount :: Account MyCategory MyAccount where
 -- CSV出力時の名称
 instance toCSVMyAccount :: ToCSV MyAccount where
   toCSV WithdrawalsByOwner = "事業主貸"
-  toCSV InvestmentsByOwner = "事業主借"
   toCSV Sales = "売上"
   toCSV Rent = "地代家賃"
   toCSV Communication = "通信費"
