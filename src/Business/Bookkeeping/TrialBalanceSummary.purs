@@ -6,16 +6,14 @@ module Business.Bookkeeping.TrialBalanceSummary
 import Prelude hiding (class Category)
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (class AccountCategory, categories)
-import Business.Bookkeeping.Data.Summary (TrialBalanceR, plus)
-import Business.Bookkeeping.TrialBalance (TrialBalance)
-import Data.Foldable (foldr)
+import Business.Bookkeeping.Data.Summary (TrialBalanceR, mkTrialBalanceR)
+import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Bounded (class GenericBottom)
 import Data.Generic.Rep.Enum (class GenericEnum)
-import Data.List (List, filter)
-import Data.Maybe (Maybe(..))
+import Data.List (List, concatMap, filter)
 import Data.Symbol (SProxy(..))
-import Record (delete, insert)
+import Record (insert)
 
 -- 勘定科目分類別の合計残高試算表（BSとPL）
 type TrialBalanceSummary c
@@ -28,26 +26,11 @@ mkTrialBalanceSummary ::
   Generic c rep =>
   GenericBottom rep =>
   GenericEnum rep =>
-  List (TrialBalance a) -> List (TrialBalanceSummary c)
-mkTrialBalanceSummary tbs =
+  List (GeneralLedger a) -> List (TrialBalanceSummary c)
+mkTrialBalanceSummary gls =
   categories
-    <#> ( \c ->
-          filter (\tb -> cat tb.account == c) tbs
-            <#> delete (SProxy :: SProxy "account")
-            # foldr foldTrialBalance initialTrialBalance
-            # insert (SProxy :: SProxy "category") c
-      )
-  where
-  foldTrialBalance x y =
-    { debitTotal: plus x.debitTotal y.debitTotal
-    , creditTotal: plus x.creditTotal y.creditTotal
-    , debitBalance: plus x.debitBalance y.debitBalance
-    , creditBalance: plus x.creditBalance y.creditBalance
-    }
-
-  initialTrialBalance =
-    { debitTotal: Nothing
-    , creditTotal: Nothing
-    , debitBalance: Nothing
-    , creditBalance: Nothing
-    }
+    <#> \c ->
+        filter (\gl -> cat gl.account == c) gls
+          # concatMap _.ledgers
+          # mkTrialBalanceR
+          # insert (SProxy :: SProxy "category") c

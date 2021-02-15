@@ -4,15 +4,19 @@ module Business.Bookkeeping.Monthly.TrialBalanceSummary
   ) where
 
 import Prelude
-import Business.Bookkeeping.Class.Account (class Account)
-import Business.Bookkeeping.Class.Category (class AccountCategory)
-import Business.Bookkeeping.Data.Monthly (Monthly)
-import Business.Bookkeeping.Monthly.TrialBalance (MonthlyTrialBalance)
-import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary, mkTrialBalanceSummary)
+import Business.Bookkeeping.Class.Account (class Account, cat)
+import Business.Bookkeeping.Class.Category (class AccountCategory, categories)
+import Business.Bookkeeping.Data.Monthly (Monthly, monthes)
+import Business.Bookkeeping.Data.Summary (mkTrialBalanceR)
+import Business.Bookkeeping.GeneralLedger (GeneralLedger)
+import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary)
+import Data.Date (month)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Bounded (class GenericBottom)
 import Data.Generic.Rep.Enum (class GenericEnum)
-import Data.List (List)
+import Data.List (List, concatMap, filter)
+import Data.Symbol (SProxy(..))
+import Record (insert)
 
 -- 勘定科目分類別の月次合計残高試算表（BSとPL）
 type MonthlyTrialBalanceSummary c
@@ -25,9 +29,17 @@ mkMonthlyTrialBalanceSummary ::
   Generic c rep =>
   GenericBottom rep =>
   GenericEnum rep =>
-  List (MonthlyTrialBalance a) -> List (MonthlyTrialBalanceSummary c)
-mkMonthlyTrialBalanceSummary =
-  map \mtb ->
-    { month: mtb.month
-    , balances: mkTrialBalanceSummary mtb.balances
-    }
+  List (GeneralLedger a) -> List (MonthlyTrialBalanceSummary c)
+mkMonthlyTrialBalanceSummary gls =
+  monthes
+    <#> \m ->
+        { month: m
+        , balances:
+            categories
+              <#> \c ->
+                  filter (\gl -> cat gl.account == c) gls
+                    # concatMap _.ledgers
+                    # filter (\l -> month l.date == m)
+                    # mkTrialBalanceR
+                    # insert (SProxy :: SProxy "category") c
+        }
