@@ -4,16 +4,17 @@ module Business.Bookkeeping.CategorySummary
   ) where
 
 import Prelude hiding (class Category)
+import Business.Bookkeeping.AccountSummary (AccountSummary)
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (class AccountCategory, categories)
-import Business.Bookkeeping.Data.Summary (SummaryR, mkSummary)
-import Business.Bookkeeping.GeneralLedger (GeneralLedger)
+import Business.Bookkeeping.Data.Summary (SummaryR)
+import Data.Foldable (sum)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Bounded (class GenericBottom)
 import Data.Generic.Rep.Enum (class GenericEnum)
-import Data.List (List, concatMap, filter)
+import Data.List (List, filter)
 import Data.Symbol (SProxy(..))
-import Record (insert)
+import Record (delete, insert)
 
 -- 勘定科目の分類別の合計金額
 type CategorySummary c
@@ -26,17 +27,12 @@ mkCategorySummary ::
   Generic c rep =>
   GenericBottom rep =>
   GenericEnum rep =>
-  List (GeneralLedger a) -> List (CategorySummary c)
-mkCategorySummary gls =
+  List (AccountSummary a) -> List (CategorySummary c)
+mkCategorySummary ass =
   categories
     <#> ( \c ->
-          { category: c
-          , ledgers:
-              concatMap _.ledgers
-                $ filter (\gl -> cat gl.account == c) gls
-          }
-      )
-    <#> ( \l ->
-          insert (SProxy :: SProxy "category") l.category
-            $ mkSummary l.ledgers
+          filter (\as -> cat as.account == c) ass
+            <#> delete (SProxy :: SProxy "account")
+            # sum
+            # insert (SProxy :: SProxy "category") c
       )

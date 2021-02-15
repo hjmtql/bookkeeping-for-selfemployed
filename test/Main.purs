@@ -65,6 +65,6 @@ main = do
   let
     accountSummaries = mkAccountSummary generalLedgers
 
-    categorySummaries = mkCategorySummary generalLedgers
+    categorySummaries = mkCategorySummary accountSummaries
   outputAccountSummary accountSummaries
   outputCategorySummary categorySummaries
