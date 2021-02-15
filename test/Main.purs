@@ -1,7 +1,9 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger, outputTrialBalance, outputTrialBalanceSummary)
+import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger, outputMonthlyTrialBalance, outputMonthlyTrialBalanceSummary, outputTrialBalance, outputTrialBalanceSummary)
+import Business.Bookkeeping.Monthly.TrialBalance (mkMonthlyTrialBalance)
+import Business.Bookkeeping.Monthly.TrialBalanceSummary (mkMonthlyTrialBalanceSummary)
 import Business.Bookkeeping.Run (generateJournal, generateLedger)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
 import Business.Bookkeeping.TrialBalance (mkTrialBalance)
@@ -66,5 +68,11 @@ main = do
     trialBalance = mkTrialBalance generalLedgers
 
     trialBalanceSummary = mkTrialBalanceSummary trialBalance
+
+    monthlyTrialBalance = mkMonthlyTrialBalance generalLedgers
+
+    monthlyTrialBalanceSummary = mkMonthlyTrialBalanceSummary monthlyTrialBalance
   outputTrialBalance trialBalance
   outputTrialBalanceSummary trialBalanceSummary
+  outputMonthlyTrialBalance monthlyTrialBalance
+  outputMonthlyTrialBalanceSummary monthlyTrialBalanceSummary

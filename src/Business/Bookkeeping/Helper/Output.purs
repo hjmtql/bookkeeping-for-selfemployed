@@ -3,6 +3,7 @@ module Business.Bookkeeping.Helper.Output where
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (categories)
+import Business.Bookkeeping.Data.Monthly (monthes)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput, printJournal)
 import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput, printLedger)
@@ -10,9 +11,12 @@ import Business.Bookkeeping.Helper.Output.TrialBalance (class TrialBalanceOutput
 import Business.Bookkeeping.Helper.Output.TrialBalanceSummary (class TrialBalanceSummaryOutput, printTrialBalanceSummary)
 import Business.Bookkeeping.Helper.PathName (class PathName, pathName)
 import Business.Bookkeeping.Journal (Journal)
+import Business.Bookkeeping.Monthly.TrialBalance (MonthlyTrialBalance)
+import Business.Bookkeeping.Monthly.TrialBalanceSummary (MonthlyTrialBalanceSummary)
 import Business.Bookkeeping.TrialBalance (TrialBalance)
 import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary)
 import Data.Either (Either(..))
+import Data.Enum (fromEnum)
 import Data.Foldable (for_)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Bounded (class GenericBottom)
@@ -84,6 +88,40 @@ outputTrialBalanceSummary tbss = do
     (pathJoin [ paths.top, paths.sum, "trialbalancesummary.csv" ])
     out
 
+outputMonthlyTrialBalance ::
+  forall a.
+  TrialBalanceOutput a =>
+  L.List (MonthlyTrialBalance a) -> Effect Unit
+outputMonthlyTrialBalance mtbs = do
+  orMkDir paths.top
+  orMkDir $ pathJoin [ paths.top, paths.sum ]
+  orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly ]
+  for_ monthes \m ->
+    orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum m) ]
+  for_ mtbs \mtb -> do
+    out <- effEither $ printTrialBalance mtb.balances
+    S.writeTextFile
+      UTF8
+      (pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum mtb.month), "trialbalance.csv" ])
+      out
+
+outputMonthlyTrialBalanceSummary ::
+  forall c.
+  TrialBalanceSummaryOutput c =>
+  L.List (MonthlyTrialBalanceSummary c) -> Effect Unit
+outputMonthlyTrialBalanceSummary mtbss = do
+  orMkDir paths.top
+  orMkDir $ pathJoin [ paths.top, paths.sum ]
+  orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly ]
+  for_ monthes \m ->
+    orMkDir $ pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum m) ]
+  for_ mtbss \mtbs -> do
+    out <- effEither $ printTrialBalanceSummary mtbs.balances
+    S.writeTextFile
+      UTF8
+      (pathJoin [ paths.top, paths.sum, paths.monthly, show (fromEnum mtbs.month), "trialbalancesummary.csv" ])
+      out
+
 effEither :: forall a b. Show a => Either a b -> Effect b
 effEither = case _ of
   Right s -> pure s
@@ -101,9 +139,11 @@ paths ::
   { top :: String
   , sub :: String
   , sum :: String
+  , monthly :: String
   }
 paths =
   { top: "dist"
   , sub: "ledger"
   , sum: "summary"
+  , monthly: "monthly"
   }
