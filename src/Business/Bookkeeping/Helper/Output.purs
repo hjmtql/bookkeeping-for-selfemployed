@@ -1,17 +1,17 @@
 module Business.Bookkeeping.Helper.Output where
 
 import Prelude
-import Business.Bookkeeping.AccountSummary (AccountSummary)
-import Business.Bookkeeping.CategorySummary (CategorySummary)
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (categories)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
-import Business.Bookkeeping.Helper.Output.AccountSummary (class AccountSummaryOutput, printAccountSummary)
-import Business.Bookkeeping.Helper.Output.CategorySummary (class CategorySummaryOutput, printCategorySummary)
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput, printJournal)
 import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput, printLedger)
+import Business.Bookkeeping.Helper.Output.TrialBalance (class TrialBalanceOutput, printTrialBalance)
+import Business.Bookkeeping.Helper.Output.TrialBalanceSummary (class TrialBalanceSummaryOutput, printTrialBalanceSummary)
 import Business.Bookkeeping.Helper.PathName (class PathName, pathName)
 import Business.Bookkeeping.Journal (Journal)
+import Business.Bookkeeping.TrialBalance (TrialBalance)
+import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary)
 import Data.Either (Either(..))
 import Data.Foldable (for_)
 import Data.Generic.Rep (class Generic)
@@ -58,30 +58,30 @@ outputLedger gs = do
       (pathJoin [ paths.top, paths.sub, pathName (cat g.account), pathName g.account <> ".csv" ])
       out
 
-outputAccountSummary ::
+outputTrialBalance ::
   forall a.
-  AccountSummaryOutput a =>
-  L.List (AccountSummary a) -> Effect Unit
-outputAccountSummary ass = do
-  out <- effEither $ printAccountSummary ass
+  TrialBalanceOutput a =>
+  L.List (TrialBalance a) -> Effect Unit
+outputTrialBalance tbs = do
+  out <- effEither $ printTrialBalance tbs
   orMkDir paths.top
   orMkDir $ pathJoin [ paths.top, paths.sum ]
   S.writeTextFile
     UTF8
-    (pathJoin [ paths.top, paths.sum, "account.csv" ])
+    (pathJoin [ paths.top, paths.sum, "trialbalance.csv" ])
     out
 
-outputCategorySummary ::
+outputTrialBalanceSummary ::
   forall c.
-  CategorySummaryOutput c =>
-  L.List (CategorySummary c) -> Effect Unit
-outputCategorySummary css = do
-  out <- effEither $ printCategorySummary css
+  TrialBalanceSummaryOutput c =>
+  L.List (TrialBalanceSummary c) -> Effect Unit
+outputTrialBalanceSummary tbss = do
+  out <- effEither $ printTrialBalanceSummary tbss
   orMkDir paths.top
   orMkDir $ pathJoin [ paths.top, paths.sum ]
   S.writeTextFile
     UTF8
-    (pathJoin [ paths.top, paths.sum, "category.csv" ])
+    (pathJoin [ paths.top, paths.sum, "trialbalancesummary.csv" ])
     out
 
 effEither :: forall a b. Show a => Either a b -> Effect b

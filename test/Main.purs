@@ -1,11 +1,11 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.AccountSummary (mkAccountSummary)
-import Business.Bookkeeping.CategorySummary (mkCategorySummary)
-import Business.Bookkeeping.Helper.Output (effEither, outputAccountSummary, outputCategorySummary, outputJournal, outputLedger)
+import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger, outputTrialBalance, outputTrialBalanceSummary)
 import Business.Bookkeeping.Run (generateJournal, generateLedger)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
+import Business.Bookkeeping.TrialBalance (mkTrialBalance)
+import Business.Bookkeeping.TrialBalanceSummary (mkTrialBalanceSummary)
 import Effect (Effect)
 import Test.MyAccount (MyAccount(..))
 
@@ -63,8 +63,8 @@ main = do
   outputLedger generalLedgers
   -- 確定申告用の合計金額CSV出力
   let
-    accountSummaries = mkAccountSummary generalLedgers
+    trialBalance = mkTrialBalance generalLedgers
 
-    categorySummaries = mkCategorySummary accountSummaries
-  outputAccountSummary accountSummaries
-  outputCategorySummary categorySummaries
+    trialBalanceSummary = mkTrialBalanceSummary trialBalance
+  outputTrialBalance trialBalance
+  outputTrialBalanceSummary trialBalanceSummary

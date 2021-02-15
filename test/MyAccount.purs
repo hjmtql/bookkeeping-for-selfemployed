@@ -2,12 +2,12 @@ module Test.MyAccount where
 
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account)
-import Business.Bookkeeping.Helper.Output.AccountSummary (class AccountSummaryOutput)
-import Business.Bookkeeping.Helper.Output.JP.AccountSummary (accountSummaryOrder, fromAccountSummary) as JP
 import Business.Bookkeeping.Helper.Output.JP.Journal (fromJournal, journalOrder) as JP
 import Business.Bookkeeping.Helper.Output.JP.Ledger (fromLedger, ledgerOrder) as JP
+import Business.Bookkeeping.Helper.Output.JP.TrialBalance (fromTrialBalance, trialBalanceOrder) as JP
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput)
 import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput)
+import Business.Bookkeeping.Helper.Output.TrialBalance (class TrialBalanceOutput)
 import Business.Bookkeeping.Helper.PathName (class PathName)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
@@ -67,6 +67,6 @@ instance journalOutputMyAccount :: JournalOutput MyAccount where
 instance ledgerOutputMyAccount :: LedgerOutput MyAccount where
   printLedger = printCSVWithOrder JP.ledgerOrder <<< map JP.fromLedger
 
--- 勘定科目別の合計金額CSV出力時の設定
-instance accountSummaryOutputMyAccount :: AccountSummaryOutput MyAccount where
-  printAccountSummary = printCSVWithOrder JP.accountSummaryOrder <<< map JP.fromAccountSummary
+-- 合計残高試算表CSV出力時の設定
+instance trialBalanceOutputMyAccount :: TrialBalanceOutput MyAccount where
+  printTrialBalance = printCSVWithOrder JP.trialBalanceOrder <<< map JP.fromTrialBalance

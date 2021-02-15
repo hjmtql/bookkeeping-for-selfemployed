@@ -2,15 +2,15 @@ module Test.MyCategory where
 
 import Prelude
 import Business.Bookkeeping.Class.Category (class AccountCategory)
-import Business.Bookkeeping.Helper.Output.CategorySummary (class CategorySummaryOutput)
-import Business.Bookkeeping.Helper.Output.JP.CategorySummary as JP
+import Business.Bookkeeping.Helper.Output.JP.TrialBalanceSummary as JP
+import Business.Bookkeeping.Helper.Output.TrialBalanceSummary (class TrialBalanceSummaryOutput)
 import Business.Bookkeeping.Helper.PathName (class PathName)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Record.CSV.Printer (printCSVWithOrder)
 import Record.CSV.Printer.ToCSV (class ToCSV)
 
--- 勘定科目の分類
+-- 勘定科目分類
 data MyCategory
   = Assets
   | Liabilities
@@ -36,6 +36,6 @@ instance toCSVMyCategory :: ToCSV MyCategory where
 instance pathNameMyCategory :: PathName MyCategory where
   pathName = genericShow
 
--- 勘定科目の分類別の合計金額CSV出力時の設定
-instance categorySummaryOutputMyCategory :: CategorySummaryOutput MyCategory where
-  printCategorySummary = printCSVWithOrder JP.categorySummaryOrder <<< map JP.fromCategorySummary
+-- 勘定科目分類別の合計残高試算表CSV出力時の設定
+instance trialBalanceSummaryOutputMyCategory :: TrialBalanceSummaryOutput MyCategory where
+  printTrialBalanceSummary = printCSVWithOrder JP.trialBalanceSummaryOrder <<< map JP.fromTrialBalanceSummary
