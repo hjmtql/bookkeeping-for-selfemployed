@@ -14,7 +14,7 @@ type ENJournal a
     , "Amount" :: Int
     }
 
-fromJournal :: forall a. Account a => Journal a -> ENJournal a
+fromJournal :: forall c a. Account c a => Journal a -> ENJournal a
 fromJournal j =
   { "No": j.no
   , "Date": fromDate j.date

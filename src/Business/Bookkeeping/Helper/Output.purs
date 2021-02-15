@@ -3,7 +3,7 @@ module Business.Bookkeeping.Helper.Output where
 import Prelude
 import Business.Bookkeeping.AccountSummary (AccountSummary)
 import Business.Bookkeeping.Class.Account (class Account, cat)
-import Business.Bookkeeping.Data.Category (categories)
+import Business.Bookkeeping.Class.Category (categories)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Business.Bookkeeping.Helper.Output.AccountSummary (class AccountSummaryOutput, printAccountSummary)
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput, printJournal)
@@ -12,6 +12,9 @@ import Business.Bookkeeping.Helper.PathName (class PathName, pathName)
 import Business.Bookkeeping.Journal (Journal)
 import Data.Either (Either(..))
 import Data.Foldable (for_)
+import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep.Bounded (class GenericBottom)
+import Data.Generic.Rep.Enum (class GenericEnum)
 import Data.List as L
 import Data.String (joinWith)
 import Effect (Effect)
@@ -32,15 +35,19 @@ outputJournal js = do
     out
 
 outputLedger ::
-  forall a.
+  forall a c rep.
   LedgerOutput a =>
-  Account a =>
+  Account c a =>
   PathName a =>
+  PathName c =>
+  Generic c rep =>
+  GenericBottom rep =>
+  GenericEnum rep =>
   L.List (GeneralLedger a) -> Effect Unit
 outputLedger gs = do
   orMkDir paths.top
   orMkDir $ pathJoin [ paths.top, paths.sub ]
-  for_ categories \c ->
+  for_ (categories :: L.List c) \c ->
     orMkDir $ pathJoin [ paths.top, paths.sub, pathName c ]
   for_ gs \g -> do
     out <- effEither $ printLedger g.ledgers

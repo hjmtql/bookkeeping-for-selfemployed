@@ -11,7 +11,7 @@ type JPAccountSummary a
     , "差異金額" :: Int
     }
 
-fromAccountSummary :: forall a. Account a => AccountSummary a -> JPAccountSummary a
+fromAccountSummary :: forall c a. Account c a => AccountSummary a -> JPAccountSummary a
 fromAccountSummary s =
   { "勘定科目": s.account
   , "借方金額": s.debitAmount

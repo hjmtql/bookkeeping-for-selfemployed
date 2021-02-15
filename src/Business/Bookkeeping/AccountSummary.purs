@@ -15,7 +15,7 @@ import Record (insert)
 type AccountSummary a
   = SummaryR ( account :: a )
 
-mkAccountSummary :: forall a. Account a => List (GeneralLedger a) -> List (AccountSummary a)
+mkAccountSummary :: forall c a. Account c a => List (GeneralLedger a) -> List (AccountSummary a)
 mkAccountSummary =
   map
     ( \l ->

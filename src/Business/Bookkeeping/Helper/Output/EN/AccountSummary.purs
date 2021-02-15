@@ -11,7 +11,7 @@ type EnAccountSummary a
     , "Diff Amount" :: Int
     }
 
-fromAccountSummary :: forall a. Account a => AccountSummary a -> EnAccountSummary a
+fromAccountSummary :: forall c a. Account c a => AccountSummary a -> EnAccountSummary a
 fromAccountSummary s =
   { "Account": s.account
   , "Debit Amount": s.debitAmount

@@ -16,16 +16,16 @@ import Data.Generic.Rep.Enum (class GenericEnum)
 import Data.List as L
 
 generateJournal ::
-  forall a.
-  Account a =>
+  forall c a.
+  Account c a =>
   Transaction a Unit -> Either String (L.List (Journal a))
 generateJournal = mkJournals <<< execWriter
 
 generateLedger ::
-  forall a b.
-  Generic a b =>
-  GenericBottom b =>
-  GenericEnum b =>
-  Account a =>
+  forall c a rep.
+  Generic a rep =>
+  GenericBottom rep =>
+  GenericEnum rep =>
+  Account c a =>
   L.List (Journal a) -> L.List (GeneralLedger a)
 generateLedger js = flip mkGeneralLedger js <$> accounts
