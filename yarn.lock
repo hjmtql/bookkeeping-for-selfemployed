@@ -879,10 +879,10 @@ signal-exit@^3.0.2:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.3.tgz#a1410c2edd8f077b08b4e253c8eacfcaf057461c"
   integrity sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==
 
-spago@^0.15.3:
-  version "0.15.3"
-  resolved "https://registry.yarnpkg.com/spago/-/spago-0.15.3.tgz#348de88f2aa499abaee9289b7d66e1e049807f0c"
-  integrity sha512-CNpbJiI+6MPpttbCtGIGFUroegXze4I7joXCTfiiTRzOUKcMV925fm7dxyAa3AVUUUvGi3D55k65aniGR1cVMA==
+spago@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/spago/-/spago-0.19.0.tgz#a3897cd86989df91d775b67f8ca350df825d5267"
+  integrity sha512-Nya6XumeRerMjkSXrexqlQJFoObYK8ybj7EtoB9WOHQfC4meySkrbfiD5bJhhn+WVhiGzHIqi4dllnrlTrH1wA==
   dependencies:
     request "^2.88.0"
     tar "^4.4.8"
