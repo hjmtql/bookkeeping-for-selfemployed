@@ -1,15 +1,24 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.Helper.Output (effEither, outputYearlyJournal, outputYearlyLedger, outputYearlyMonthlyTrialBalance, outputYearlyMonthlyTrialBalanceSummary, outputYearlyTrialBalance, outputYearlyTrialBalanceSummary)
-import Business.Bookkeeping.Run (generateJournal)
+import Business.Bookkeeping.Helper.Output
+  ( effEither
+  , outputYearlyJournal
+  , outputYearlyLedger
+  , outputYearlyMonthlyTrialBalance
+  , outputYearlyMonthlyTrialBalanceSummary
+  , outputYearlyTrialBalance
+  , outputYearlyTrialBalanceSummary
+  )
+import Business.Bookkeeping.Run
+  ( createGeneralLedger
+  , generateJournal
+  , makeMonthlyTrialBalance
+  , makeMonthlyTrialBalanceSummary
+  , makeTrialBalance
+  , makeTrialBalanceSummary
+  )
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
-import Business.Bookkeeping.Yearly.GeneralLedger (mkYearlyGeneralLedgers)
-import Business.Bookkeeping.Yearly.Journal (mkYearlyJournals)
-import Business.Bookkeeping.Yearly.Monthly.TrialBalance (mkYearlyMonthlyTrialBalance)
-import Business.Bookkeeping.Yearly.Monthly.TrialBalanceSummary (mkYearlyMonthlyTrialBalanceSummary)
-import Business.Bookkeeping.Yearly.TrialBalance (mkYearlyTrialBalance)
-import Business.Bookkeeping.Yearly.TrialBalanceSummary (mkYearlyTrialBalanceSummary)
 import Effect (Effect)
 import Test.MyAccount (MyAccount(..))
 
@@ -61,24 +70,22 @@ transaction = do
 
 main :: Effect Unit
 main = do
+  journal <- effEither $ generateJournal transaction
+  let
+    generalLedger = createGeneralLedger journal
+
+    trialBalance = makeTrialBalance generalLedger
+
+    trialBalanceSummary = makeTrialBalanceSummary generalLedger
+
+    mnthlyTrialBalance = makeMonthlyTrialBalance generalLedger
+
+    mnthlyTrialBalanceSummary = makeMonthlyTrialBalanceSummary generalLedger
   -- 仕訳帳と総勘定元帳のCSV出力
-  journals <- effEither $ generateJournal transaction
-  let
-    yearlyJournals = mkYearlyJournals journals
-
-    yearlyGeneralLedgers = mkYearlyGeneralLedgers yearlyJournals
-  outputYearlyJournal yearlyJournals
-  outputYearlyLedger yearlyGeneralLedgers
+  outputYearlyJournal journal
+  outputYearlyLedger generalLedger
   -- 確定申告用の合計金額CSV出力
-  let
-    yearlyTrialBalance = mkYearlyTrialBalance yearlyGeneralLedgers
-
-    yearlyTrialBalanceSummary = mkYearlyTrialBalanceSummary yearlyGeneralLedgers
-
-    yearlyMonthlyTrialBalance = mkYearlyMonthlyTrialBalance yearlyGeneralLedgers
-
-    yearlyMonthlyTrialBalanceSummary = mkYearlyMonthlyTrialBalanceSummary yearlyGeneralLedgers
-  outputYearlyTrialBalance yearlyTrialBalance
-  outputYearlyTrialBalanceSummary yearlyTrialBalanceSummary
-  outputYearlyMonthlyTrialBalance yearlyMonthlyTrialBalance
-  outputYearlyMonthlyTrialBalanceSummary yearlyMonthlyTrialBalanceSummary
+  outputYearlyTrialBalance trialBalance
+  outputYearlyTrialBalanceSummary trialBalanceSummary
+  outputYearlyMonthlyTrialBalance mnthlyTrialBalance
+  outputYearlyMonthlyTrialBalanceSummary mnthlyTrialBalanceSummary
