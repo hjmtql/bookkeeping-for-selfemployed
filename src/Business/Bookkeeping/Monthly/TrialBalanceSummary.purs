@@ -6,7 +6,7 @@ module Business.Bookkeeping.Monthly.TrialBalanceSummary
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (class AccountCategory, categories)
-import Business.Bookkeeping.Data.Monthly (Monthly, monthes)
+import Business.Bookkeeping.Data.Monthly (Monthly, months)
 import Business.Bookkeeping.Data.Summary (mkTrialBalanceR)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary)
@@ -31,7 +31,7 @@ mkMonthlyTrialBalanceSummary ::
   GenericEnum rep =>
   List (GeneralLedger a) -> List (MonthlyTrialBalanceSummary c)
 mkMonthlyTrialBalanceSummary gls =
-  monthes
+  months
     <#> \m ->
         { month: m
         , balances:

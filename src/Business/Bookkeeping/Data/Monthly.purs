@@ -1,6 +1,6 @@
 module Business.Bookkeeping.Data.Monthly
   ( Monthly
-  , monthes
+  , months
   ) where
 
 import Data.Date (Month(..))
@@ -12,5 +12,5 @@ type Monthly a
     , balances :: List a
     }
 
-monthes :: List Month
-monthes = enumFromTo January December
+months :: List Month
+months = enumFromTo January December

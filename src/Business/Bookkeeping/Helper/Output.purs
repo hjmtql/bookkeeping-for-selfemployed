@@ -11,7 +11,7 @@ module Business.Bookkeeping.Helper.Output
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account, cat)
 import Business.Bookkeeping.Class.Category (categories)
-import Business.Bookkeeping.Data.Monthly (monthes)
+import Business.Bookkeeping.Data.Monthly (months)
 import Business.Bookkeeping.Helper.Output.Journal (class JournalOutput, printJournal)
 import Business.Bookkeeping.Helper.Output.Ledger (class LedgerOutput, printLedger)
 import Business.Bookkeeping.Helper.Output.TrialBalance (class TrialBalanceOutput, printTrialBalance)
@@ -114,7 +114,7 @@ outputMonthlyTrialBalance ymtbs = do
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year ]
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary ]
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly ]
-    for_ monthes \m ->
+    for_ months \m ->
       orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly, showEnum m ]
     for_ ymtb.contents \mtb -> do
       out <- effEither $ printTrialBalance mtb.balances
@@ -133,7 +133,7 @@ outputMonthlyTrialBalanceSummary ymtbss = do
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year ]
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary ]
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly ]
-    for_ monthes \m ->
+    for_ months \m ->
       orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly, showEnum m ]
     for_ ymtbs.contents \mtbs -> do
       out <- effEither $ printTrialBalanceSummary mtbs.balances
