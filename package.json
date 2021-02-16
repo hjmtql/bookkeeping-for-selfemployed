@@ -4,7 +4,7 @@
     "clean": "rimraf dist output",
     "build": "spago build",
     "test": "spago -x test.dhall test",
-    "check": "spago -x test.dhall test --main Test.Check"
+    "checktest": "spago -x test.dhall test --main Test.Check"
   },
   "devDependencies": {
     "node-fs": "^0.1.7",
