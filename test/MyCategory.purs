@@ -22,6 +22,9 @@ derive instance eqMyCategory :: Eq MyCategory
 
 derive instance geneticMyCategory :: Generic MyCategory _
 
+instance showMyCategory :: Show MyCategory where
+  show = genericShow
+
 instance accountCategoryMyCategory :: AccountCategory MyCategory
 
 -- CSV出力時の名称

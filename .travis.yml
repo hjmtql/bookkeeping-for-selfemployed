@@ -4,6 +4,7 @@ node_js:
 install:
   - yarn
 script:
+  - yarn checktest
   - yarn test
 deploy:
   provider: pages

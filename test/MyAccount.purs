@@ -31,6 +31,9 @@ derive instance eqMyAccount :: Eq MyAccount
 
 derive instance geneticMyAccount :: Generic MyAccount _
 
+instance showMyAccount :: Show MyAccount where
+  show = genericShow
+
 -- 勘定科目の分類
 instance accountMyAccount :: Account MyCategory MyAccount where
   cat WithdrawalsByOwner = Assets
