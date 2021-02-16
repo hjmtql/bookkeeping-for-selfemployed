@@ -1,23 +1,8 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.Helper.Output
-  ( effEither
-  , outputYearlyJournal
-  , outputYearlyLedger
-  , outputYearlyMonthlyTrialBalance
-  , outputYearlyMonthlyTrialBalanceSummary
-  , outputYearlyTrialBalance
-  , outputYearlyTrialBalanceSummary
-  )
-import Business.Bookkeeping.Run
-  ( createGeneralLedger
-  , generateJournal
-  , makeMonthlyTrialBalance
-  , makeMonthlyTrialBalanceSummary
-  , makeTrialBalance
-  , makeTrialBalanceSummary
-  )
+import Business.Bookkeeping.Helper.Output (effEither, outputGeneralLedger, outputJournal, outputMonthlyTrialBalance, outputMonthlyTrialBalanceSummary, outputTrialBalance, outputTrialBalanceSummary)
+import Business.Bookkeeping.Run (createGeneralLedger, generateJournal, makeMonthlyTrialBalance, makeMonthlyTrialBalanceSummary, makeTrialBalance, makeTrialBalanceSummary)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
 import Effect (Effect)
 import Test.MyAccount (MyAccount(..))
@@ -82,10 +67,10 @@ main = do
 
     mnthlyTrialBalanceSummary = makeMonthlyTrialBalanceSummary generalLedger
   -- 仕訳帳と総勘定元帳のCSV出力
-  outputYearlyJournal journal
-  outputYearlyLedger generalLedger
+  outputJournal journal
+  outputGeneralLedger generalLedger
   -- 確定申告用の合計金額CSV出力
-  outputYearlyTrialBalance trialBalance
-  outputYearlyTrialBalanceSummary trialBalanceSummary
-  outputYearlyMonthlyTrialBalance mnthlyTrialBalance
-  outputYearlyMonthlyTrialBalanceSummary mnthlyTrialBalanceSummary
+  outputTrialBalance trialBalance
+  outputTrialBalanceSummary trialBalanceSummary
+  outputMonthlyTrialBalance mnthlyTrialBalance
+  outputMonthlyTrialBalanceSummary mnthlyTrialBalanceSummary

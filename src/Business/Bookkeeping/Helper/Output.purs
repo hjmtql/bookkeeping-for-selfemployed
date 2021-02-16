@@ -1,4 +1,12 @@
-module Business.Bookkeeping.Helper.Output where
+module Business.Bookkeeping.Helper.Output
+  ( outputJournal
+  , outputGeneralLedger
+  , outputTrialBalance
+  , outputTrialBalanceSummary
+  , outputMonthlyTrialBalance
+  , outputMonthlyTrialBalanceSummary
+  , effEither
+  ) where
 
 import Prelude
 import Business.Bookkeeping.Class.Account (class Account, cat)
@@ -16,7 +24,7 @@ import Business.Bookkeeping.Yearly.Monthly.TrialBalanceSummary (YearlyMonthlyTri
 import Business.Bookkeeping.Yearly.TrialBalance (YearlyTrialBalance)
 import Business.Bookkeeping.Yearly.TrialBalanceSummary (YearlyTrialBalanceSummary)
 import Data.Either (Either(..))
-import Data.Enum (fromEnum)
+import Data.Enum (class BoundedEnum, fromEnum)
 import Data.Foldable (for_)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Bounded (class GenericBottom)
@@ -28,21 +36,21 @@ import Effect.Exception (throw)
 import Node.Encoding (Encoding(..))
 import Node.FS.Sync as S
 
-outputYearlyJournal ::
+outputJournal ::
   forall a.
   JournalOutput a =>
   L.List (YearlyJournal a) -> Effect Unit
-outputYearlyJournal yjs = do
+outputJournal yjs = do
   orMkDir pathFlags.dist
   for_ yjs \yj -> do
     out <- effEither $ printJournal yj.contents
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum yj.year) ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum yj.year ]
     S.writeTextFile
       UTF8
-      (pathJoin [ pathFlags.dist, show (fromEnum yj.year), "journal.csv" ])
+      (pathJoin [ pathFlags.dist, showEnum yj.year, fileNames.journal ])
       out
 
-outputYearlyLedger ::
+outputGeneralLedger ::
   forall a c rep.
   LedgerOutput a =>
   Account c a =>
@@ -52,86 +60,86 @@ outputYearlyLedger ::
   GenericBottom rep =>
   GenericEnum rep =>
   L.List (YearlyGeneralLedger a) -> Effect Unit
-outputYearlyLedger ygls = do
+outputGeneralLedger ygls = do
   orMkDir pathFlags.dist
   for_ ygls \ygl -> do
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ygl.year) ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ygl.year), pathFlags.ledger ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ygl.year ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ygl.year, pathFlags.ledger ]
     for_ (categories :: L.List c) \c ->
-      orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ygl.year), pathFlags.ledger, pathName c ]
+      orMkDir $ pathJoin [ pathFlags.dist, showEnum ygl.year, pathFlags.ledger, pathName c ]
     for_ ygl.contents \gl -> do
       out <- effEither $ printLedger gl.ledgers
       S.writeTextFile
         UTF8
-        (pathJoin [ pathFlags.dist, show (fromEnum ygl.year), pathFlags.ledger, pathName (cat gl.account), pathName gl.account <> ".csv" ])
+        (pathJoin [ pathFlags.dist, showEnum ygl.year, pathFlags.ledger, pathName (cat gl.account), csvExt (pathName gl.account) ])
         out
 
-outputYearlyTrialBalance ::
+outputTrialBalance ::
   forall a.
   TrialBalanceOutput a =>
   L.List (YearlyTrialBalance a) -> Effect Unit
-outputYearlyTrialBalance ytbs = do
+outputTrialBalance ytbs = do
   orMkDir pathFlags.dist
   for_ ytbs \ytb -> do
     out <- effEither $ printTrialBalance ytb.contents
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ytb.year) ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ytb.year), pathFlags.summary ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ytb.year ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ytb.year, pathFlags.summary ]
     S.writeTextFile
       UTF8
-      (pathJoin [ pathFlags.dist, show (fromEnum ytb.year), pathFlags.summary, "trialbalance.csv" ])
+      (pathJoin [ pathFlags.dist, showEnum ytb.year, pathFlags.summary, fileNames.trialBalance ])
       out
 
-outputYearlyTrialBalanceSummary ::
+outputTrialBalanceSummary ::
   forall c.
   TrialBalanceSummaryOutput c =>
   L.List (YearlyTrialBalanceSummary c) -> Effect Unit
-outputYearlyTrialBalanceSummary ytbss = do
+outputTrialBalanceSummary ytbss = do
   orMkDir pathFlags.dist
   for_ ytbss \ytbs -> do
     out <- effEither $ printTrialBalanceSummary ytbs.contents
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ytbs.year) ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ytbs.year), pathFlags.summary ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ytbs.year ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ytbs.year, pathFlags.summary ]
     S.writeTextFile
       UTF8
-      (pathJoin [ pathFlags.dist, show (fromEnum ytbs.year), pathFlags.summary, "trialbalancesummary.csv" ])
+      (pathJoin [ pathFlags.dist, showEnum ytbs.year, pathFlags.summary, fileNames.trialBalanceSummary ])
       out
 
-outputYearlyMonthlyTrialBalance ::
+outputMonthlyTrialBalance ::
   forall a.
   TrialBalanceOutput a =>
   L.List (YearlyMonthlyTrialBalance a) -> Effect Unit
-outputYearlyMonthlyTrialBalance ymtbs = do
+outputMonthlyTrialBalance ymtbs = do
   orMkDir pathFlags.dist
   for_ ymtbs \ymtb -> do
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtb.year) ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtb.year), pathFlags.summary ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtb.year), pathFlags.summary, pathFlags.monthly ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly ]
     for_ monthes \m ->
-      orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtb.year), pathFlags.summary, pathFlags.monthly, show (fromEnum m) ]
+      orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly, showEnum m ]
     for_ ymtb.contents \mtb -> do
       out <- effEither $ printTrialBalance mtb.balances
       S.writeTextFile
         UTF8
-        (pathJoin [ pathFlags.dist, show (fromEnum ymtb.year), pathFlags.summary, pathFlags.monthly, show (fromEnum mtb.month), "trialbalance.csv" ])
+        (pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly, showEnum mtb.month, fileNames.trialBalance ])
         out
 
-outputYearlyMonthlyTrialBalanceSummary ::
+outputMonthlyTrialBalanceSummary ::
   forall c.
   TrialBalanceSummaryOutput c =>
   L.List (YearlyMonthlyTrialBalanceSummary c) -> Effect Unit
-outputYearlyMonthlyTrialBalanceSummary ymtbss = do
+outputMonthlyTrialBalanceSummary ymtbss = do
   orMkDir pathFlags.dist
   for_ ymtbss \ymtbs -> do
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtbs.year) ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtbs.year), pathFlags.summary ]
-    orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtbs.year), pathFlags.summary, pathFlags.monthly ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary ]
+    orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly ]
     for_ monthes \m ->
-      orMkDir $ pathJoin [ pathFlags.dist, show (fromEnum ymtbs.year), pathFlags.summary, pathFlags.monthly, show (fromEnum m) ]
+      orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly, showEnum m ]
     for_ ymtbs.contents \mtbs -> do
       out <- effEither $ printTrialBalanceSummary mtbs.balances
       S.writeTextFile
         UTF8
-        (pathJoin [ pathFlags.dist, show (fromEnum ymtbs.year), pathFlags.summary, pathFlags.monthly, show (fromEnum mtbs.month), "trialbalancesummary.csv" ])
+        (pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly, showEnum mtbs.month, fileNames.trialBalanceSummary ])
         out
 
 effEither :: forall a b. Show a => Either a b -> Effect b
@@ -143,6 +151,9 @@ orMkDir :: String -> Effect Unit
 orMkDir path = do
   isDir <- S.exists path
   when (not isDir) $ S.mkdir path
+
+showEnum :: forall a. BoundedEnum a => a -> String
+showEnum = show <<< fromEnum
 
 pathJoin :: Array String -> String
 pathJoin = joinWith "/"
@@ -158,4 +169,18 @@ pathFlags =
   , ledger: "ledger"
   , summary: "summary"
   , monthly: "monthly"
+  }
+
+csvExt :: String -> String
+csvExt fn = fn <> ".csv"
+
+fileNames ::
+  { journal :: String
+  , trialBalance :: String
+  , trialBalanceSummary :: String
+  }
+fileNames =
+  { journal: csvExt "journal"
+  , trialBalance: csvExt "trialBalance"
+  , trialBalanceSummary: csvExt "trialBalanceSummary"
   }
