@@ -12,8 +12,8 @@ import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary)
 import Data.Date (month)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List, concatMap, filter)
 import Data.Symbol (SProxy(..))
 import Record (insert)
@@ -27,8 +27,9 @@ mkMonthlyTrialBalanceSummary ::
   AccountCategory c =>
   Account c a =>
   Generic c rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   List (GeneralLedger a) -> List (MonthlyTrialBalanceSummary c)
 mkMonthlyTrialBalanceSummary gls =
   months

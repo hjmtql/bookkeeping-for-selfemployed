@@ -9,8 +9,8 @@ import Business.Bookkeeping.Class.Category (class AccountCategory, categories)
 import Business.Bookkeeping.Data.Summary (TrialBalanceR, mkTrialBalanceR)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List, concatMap, filter)
 import Data.Symbol (SProxy(..))
 import Record (insert)
@@ -24,8 +24,9 @@ mkTrialBalanceSummary ::
   AccountCategory c =>
   Account c a =>
   Generic c rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   List (GeneralLedger a) -> List (TrialBalanceSummary c)
 mkTrialBalanceSummary gls =
   categories

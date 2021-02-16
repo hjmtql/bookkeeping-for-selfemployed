@@ -27,8 +27,8 @@ import Data.Either (Either(..))
 import Data.Enum (class BoundedEnum, fromEnum)
 import Data.Foldable (for_)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List as L
 import Data.String (joinWith)
 import Effect (Effect)
@@ -43,12 +43,11 @@ outputJournal ::
 outputJournal yjs = do
   orMkDir pathFlags.dist
   for_ yjs \yj -> do
-    out <- effEither $ printJournal yj.contents
     orMkDir $ pathJoin [ pathFlags.dist, showEnum yj.year ]
     S.writeTextFile
       UTF8
       (pathJoin [ pathFlags.dist, showEnum yj.year, fileNames.journal ])
-      out
+      (printJournal yj.contents)
 
 outputGeneralLedger ::
   forall a c rep.
@@ -57,8 +56,9 @@ outputGeneralLedger ::
   PathName a =>
   PathName c =>
   Generic c rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   L.List (YearlyGeneralLedger a) -> Effect Unit
 outputGeneralLedger ygls = do
   orMkDir pathFlags.dist
@@ -67,12 +67,11 @@ outputGeneralLedger ygls = do
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ygl.year, pathFlags.ledger ]
     for_ (categories :: L.List c) \c ->
       orMkDir $ pathJoin [ pathFlags.dist, showEnum ygl.year, pathFlags.ledger, pathName c ]
-    for_ ygl.contents \gl -> do
-      out <- effEither $ printLedger gl.ledgers
+    for_ ygl.contents \gl ->
       S.writeTextFile
         UTF8
         (pathJoin [ pathFlags.dist, showEnum ygl.year, pathFlags.ledger, pathName (cat gl.account), csvExt (pathName gl.account) ])
-        out
+        (printLedger gl.ledgers)
 
 outputTrialBalance ::
   forall a.
@@ -81,13 +80,12 @@ outputTrialBalance ::
 outputTrialBalance ytbs = do
   orMkDir pathFlags.dist
   for_ ytbs \ytb -> do
-    out <- effEither $ printTrialBalance ytb.contents
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ytb.year ]
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ytb.year, pathFlags.summary ]
     S.writeTextFile
       UTF8
       (pathJoin [ pathFlags.dist, showEnum ytb.year, pathFlags.summary, fileNames.trialBalance ])
-      out
+      (printTrialBalance ytb.contents)
 
 outputTrialBalanceSummary ::
   forall c.
@@ -96,13 +94,12 @@ outputTrialBalanceSummary ::
 outputTrialBalanceSummary ytbss = do
   orMkDir pathFlags.dist
   for_ ytbss \ytbs -> do
-    out <- effEither $ printTrialBalanceSummary ytbs.contents
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ytbs.year ]
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ytbs.year, pathFlags.summary ]
     S.writeTextFile
       UTF8
       (pathJoin [ pathFlags.dist, showEnum ytbs.year, pathFlags.summary, fileNames.trialBalanceSummary ])
-      out
+      (printTrialBalanceSummary ytbs.contents)
 
 outputMonthlyTrialBalance ::
   forall a.
@@ -116,12 +113,11 @@ outputMonthlyTrialBalance ymtbs = do
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly ]
     for_ months \m ->
       orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly, showEnum m ]
-    for_ ymtb.contents \mtb -> do
-      out <- effEither $ printTrialBalance mtb.balances
+    for_ ymtb.contents \mtb ->
       S.writeTextFile
         UTF8
         (pathJoin [ pathFlags.dist, showEnum ymtb.year, pathFlags.summary, pathFlags.monthly, showEnum mtb.month, fileNames.trialBalance ])
-        out
+        (printTrialBalance mtb.balances)
 
 outputMonthlyTrialBalanceSummary ::
   forall c.
@@ -135,12 +131,11 @@ outputMonthlyTrialBalanceSummary ymtbss = do
     orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly ]
     for_ months \m ->
       orMkDir $ pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly, showEnum m ]
-    for_ ymtbs.contents \mtbs -> do
-      out <- effEither $ printTrialBalanceSummary mtbs.balances
+    for_ ymtbs.contents \mtbs ->
       S.writeTextFile
         UTF8
         (pathJoin [ pathFlags.dist, showEnum ymtbs.year, pathFlags.summary, pathFlags.monthly, showEnum mtbs.month, fileNames.trialBalanceSummary ])
-        out
+        (printTrialBalanceSummary mtbs.balances)
 
 effEither :: forall a b. Show a => Either a b -> Effect b
 effEither = case _ of

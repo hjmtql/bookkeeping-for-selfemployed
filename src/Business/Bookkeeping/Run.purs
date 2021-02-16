@@ -20,8 +20,8 @@ import Business.Bookkeeping.Yearly.TrialBalanceSummary (YearlyTrialBalanceSummar
 import Control.Monad.Writer (execWriter)
 import Data.Either (Either)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List)
 
 generateJournal ::
@@ -35,10 +35,11 @@ generateJournal tr =
 
 createGeneralLedger ::
   forall c a rep.
-  Generic a rep =>
-  GenericBottom rep =>
-  GenericEnum rep =>
   Account c a =>
+  Generic a rep =>
+  GenericTop rep =>
+  GenericBottom rep =>
+  GenericBoundedEnum rep =>
   List (YearlyJournal a) -> List (YearlyGeneralLedger a)
 createGeneralLedger = mkYearlyGeneralLedgers
 
@@ -52,8 +53,9 @@ makeTrialBalanceSummary ::
   forall c a rep.
   Account c a =>
   Generic c rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   List (YearlyGeneralLedger a) -> List (YearlyTrialBalanceSummary c)
 makeTrialBalanceSummary = mkYearlyTrialBalanceSummary
 
@@ -67,7 +69,8 @@ makeMonthlyTrialBalanceSummary ::
   forall c a rep.
   Account c a =>
   Generic c rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   List (YearlyGeneralLedger a) -> List (YearlyMonthlyTrialBalanceSummary c)
 makeMonthlyTrialBalanceSummary = mkYearlyMonthlyTrialBalanceSummary

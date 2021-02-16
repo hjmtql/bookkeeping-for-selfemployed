@@ -10,8 +10,8 @@ import Business.Bookkeeping.Data.Yearly (Yearly)
 import Business.Bookkeeping.Monthly.TrialBalanceSummary (MonthlyTrialBalanceSummary, mkMonthlyTrialBalanceSummary)
 import Business.Bookkeeping.Yearly.GeneralLedger (YearlyGeneralLedger)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List)
 
 type YearlyMonthlyTrialBalanceSummary c
@@ -22,8 +22,9 @@ mkYearlyMonthlyTrialBalanceSummary ::
   AccountCategory c =>
   Account c a =>
   Generic c rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   List (YearlyGeneralLedger a) -> List (YearlyMonthlyTrialBalanceSummary c)
 mkYearlyMonthlyTrialBalanceSummary =
   map \ygl ->

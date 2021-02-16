@@ -6,11 +6,11 @@ module Business.Bookkeeping.Class.Account
 
 import Prelude
 import Business.Bookkeeping.Class.Category (class AccountCategory)
+import Data.Generic.EnumHelper (values)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List as L
-import Data.Sum.Helper (candidates)
 
 -- 勘定科目
 class
@@ -22,8 +22,9 @@ class
 accounts ::
   forall c a rep.
   Generic a rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   Account c a =>
   L.List a
-accounts = L.fromFoldable candidates
+accounts = L.fromFoldable values

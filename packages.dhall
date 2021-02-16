@@ -1,5 +1,5 @@
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20200716/packages.dhall sha256:c4683b4c4da0fd33e0df86fc24af035c059270dd245f68b79a7937098f6c6542
+      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20210118/packages.dhall sha256:a59c5c93a68d5d066f3815a89f398bcf00e130a51cb185b2da29b20e2d8ae115
 
 let overrides = {=}
 
@@ -8,12 +8,12 @@ let additions =
         { dependencies =
           [ "free", "numbers", "parsing", "record", "typelevel-prelude" ]
         , repo = "https://github.com/hjmtql/purescript-record-csv"
-        , version = "v0.1.1"
+        , version = "v0.1.2"
         }
-      , sumtype-helper = 
+      , generics-enum-helper =
         { dependencies = [] : List Text
-        , repo = "https://github.com/hjmtql/purescript-sumtype-helper.git"
-        , version = "v0.0.0"
+        , repo = "https://github.com/hjmtql/purescript-generics-enum-helper.git"
+        , version = "v1.0.0"
         }
       }
 

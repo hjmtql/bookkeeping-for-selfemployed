@@ -9,8 +9,8 @@ import Business.Bookkeeping.Data.Yearly (Yearly)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger, mkGeneralLedger)
 import Business.Bookkeeping.Yearly.Journal (YearlyJournal)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom)
-import Data.Generic.Rep.Enum (class GenericEnum)
+import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
+import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List)
 
 type YearlyGeneralLedger a
@@ -20,8 +20,9 @@ mkYearlyGeneralLedgers ::
   forall c a rep.
   Account c a =>
   Generic a rep =>
+  GenericTop rep =>
   GenericBottom rep =>
-  GenericEnum rep =>
+  GenericBoundedEnum rep =>
   List (YearlyJournal a) -> List (YearlyGeneralLedger a)
 mkYearlyGeneralLedgers =
   map \yj ->
