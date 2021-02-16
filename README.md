@@ -31,7 +31,7 @@ See the [outputs](https://github.com/hjmtql/bookkeeping-for-selfemployed/tree/gh
 Write transactions like this...
 
 ```purescript
-transaction =
+transaction = do
   year 2020
     month 1 do
       day 10 do
@@ -40,47 +40,50 @@ transaction =
       day 20 do
         sales "some work B" 100_000
     month 2 do
-    ...
+  ...
 ```
 
 Then you will get csv files
 
 ```
 dist
-├── journal.csv
-├── ledger
-│   ├── Assets
-│   │   └── WithdrawalsByOwner.csv
-│   ├── Expenses
-│   │   ├── Commission.csv
-│   │   ├── Communication.csv
-│   │   ├── Rent.csv
-│   │   ├── Supplies.csv
-│   │   ├── Travel.csv
-│   │   └── Utilities.csv
-│   ├── Liabilities
-│   ├── Revenue
-│   │   └── Sales.csv
-│   └── Stock
-└── summary
-    ├── monthly
-    │   ├── 1
-    │   │   ├── trialbalance.csv
-    │   │   └── trialbalancesummary.csv
-    │   ├── 2
-    │   │   ├── trialbalance.csv
-    │   │   └── trialbalancesummary.csv
-   ... ...
-    │   └── 12
-    │       ├── trialbalance.csv
-    │       └── trialbalancesummary.csv
-    ├── trialbalance.csv
-    └── trialbalancesummary.csv
+├── 2019
+.   ...
+└── 2020
+    ├── journal.csv
+    ├── ledger
+    │   ├── Assets
+    │   │   └── WithdrawalsByOwner.csv
+    │   ├── Expenses
+    │   │   ├── Commission.csv
+    │   │   ├── Communication.csv
+    │   │   ├── Rent.csv
+    │   │   ├── Supplies.csv
+    │   │   ├── Travel.csv
+    │   │   └── Utilities.csv
+    │   ├── Liabilities
+    │   ├── Revenue
+    │   │   └── Sales.csv
+    │   └── Stock
+    └── summary
+        ├── monthly
+        │   ├── 1
+        │   │   ├── trialBalance.csv
+        │   │   └── trialBalanceSummary.csv
+        .   .   ...
+        │   ├── 2
+        │   │   ├── trialBalance.csv
+        │   │   └── trialBalanceSummary.csv
+        │   └── 12
+        │       ├── trialBalance.csv
+        │       └── trialBalanceSummary.csv
+        ├── trialBalance.csv
+        └── trialBalanceSummary.csv
 ```
 
 Contents like below
 
-dist/journal.csv
+dist/2020/journal.csv
 ```
 No,日付,摘要,借方勘定科目,貸方勘定科目,金額
 1,2020/1/25,"家賃按分5割1月分",地代家賃,事業主貸,25000
@@ -92,14 +95,14 @@ No,日付,摘要,借方勘定科目,貸方勘定科目,金額
 6,2020/3/25,"家賃按分5割3月分",地代家賃,事業主貸,25000
 ```
 
-dist/ledger/Revenue/Sales.csv
+dist/2020/ledger/Revenue/Sales.csv
 ```
 No,日付,摘要,勘定科目,借方金額,貸方金額
 3,2020/2/20,"xxxコーディング",事業主貸,,100000
 5,2020/3/10,"yyyサーバー構築",事業主貸,,200000
 ```
 
-dist/ledger/Assets/WithdrawalsByOwner.csv
+dist/2020/ledger/Assets/WithdrawalsByOwner.csv
 ```
 No,日付,摘要,勘定科目,借方金額,貸方金額
 1,2020/1/25,"家賃按分5割1月分",地代家賃,,25000
