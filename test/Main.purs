@@ -1,19 +1,17 @@
 module Test.Main where
 
 import Prelude
-import Business.Bookkeeping.Helper.Output (effEither, outputJournal, outputLedger, outputMonthlyTrialBalance, outputMonthlyTrialBalanceSummary, outputTrialBalance, outputTrialBalanceSummary)
-import Business.Bookkeeping.Monthly.TrialBalance (mkMonthlyTrialBalance)
-import Business.Bookkeeping.Monthly.TrialBalanceSummary (mkMonthlyTrialBalanceSummary)
-import Business.Bookkeeping.Run (generateJournal, generateLedger)
+import Business.Bookkeeping.Helper.Output (effEither, outputGeneralLedger, outputJournal, outputMonthlyTrialBalance, outputMonthlyTrialBalanceSummary, outputTrialBalance, outputTrialBalanceSummary)
+import Business.Bookkeeping.Run (createGeneralLedger, generateJournal, makeMonthlyTrialBalance, makeMonthlyTrialBalanceSummary, makeTrialBalance, makeTrialBalanceSummary)
 import Business.Bookkeeping.Transaction (Transaction, day, item, month, multipleD, single, year)
-import Business.Bookkeeping.TrialBalance (mkTrialBalance)
-import Business.Bookkeeping.TrialBalanceSummary (mkTrialBalanceSummary)
 import Effect (Effect)
 import Test.MyAccount (MyAccount(..))
 
 -- 取引の記録
 transaction :: Transaction MyAccount Unit
-transaction =
+transaction = do
+  year 2019 do
+    month 6 do day 1 do sales "zzzデザイン" 50_000
   year 2020 do
     rent
     month 2 do
@@ -57,22 +55,22 @@ transaction =
 
 main :: Effect Unit
 main = do
+  journal <- effEither $ generateJournal transaction
+  let
+    generalLedger = createGeneralLedger journal
+
+    trialBalance = makeTrialBalance generalLedger
+
+    trialBalanceSummary = makeTrialBalanceSummary generalLedger
+
+    mnthlyTrialBalance = makeMonthlyTrialBalance generalLedger
+
+    mnthlyTrialBalanceSummary = makeMonthlyTrialBalanceSummary generalLedger
   -- 仕訳帳と総勘定元帳のCSV出力
-  journals <- effEither $ generateJournal transaction
-  let
-    generalLedgers = generateLedger journals
-  outputJournal journals
-  outputLedger generalLedgers
+  outputJournal journal
+  outputGeneralLedger generalLedger
   -- 確定申告用の合計金額CSV出力
-  let
-    trialBalance = mkTrialBalance generalLedgers
-
-    trialBalanceSummary = mkTrialBalanceSummary generalLedgers
-
-    monthlyTrialBalance = mkMonthlyTrialBalance generalLedgers
-
-    monthlyTrialBalanceSummary = mkMonthlyTrialBalanceSummary generalLedgers
   outputTrialBalance trialBalance
   outputTrialBalanceSummary trialBalanceSummary
-  outputMonthlyTrialBalance monthlyTrialBalance
-  outputMonthlyTrialBalanceSummary monthlyTrialBalanceSummary
+  outputMonthlyTrialBalance mnthlyTrialBalance
+  outputMonthlyTrialBalanceSummary mnthlyTrialBalanceSummary
