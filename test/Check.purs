@@ -6,9 +6,9 @@ import Business.Bookkeeping.Helper.Output (effEither)
 import Business.Bookkeeping.Run (createGeneralLedger, generateJournal, makeMonthlyTrialBalance, makeMonthlyTrialBalanceSummary, makeTrialBalance, makeTrialBalanceSummary)
 import Business.Bookkeeping.Type (Money)
 import Data.Enum (fromEnum)
-import Data.Foldable (foldr, for_)
-import Data.List (List, zip)
-import Data.Maybe (Maybe(..))
+import Data.Foldable (foldr, for_, sum)
+import Data.List (List, concatMap, filter, zip)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (uncurry)
 import Effect (Effect)
 import Effect.Class.Console (log)
@@ -75,6 +75,62 @@ main = do
             log $ show (fromEnum ygl.year) <> " " <> show gl.account
             equal debitTotal tb.debitTotal
             equal creditTotal tb.creditTotal
+      test "trial balance and trial balance summary" do
+        zipFor_ trialBalance trialBalanceSummary \ytb ytbs -> do
+          equal ytb.year ytbs.year
+          let
+            tbTotals = foldTrialBalance ytb.contents
+
+            tbsTotals = foldTrialBalance ytbs.contents
+          log $ show (fromEnum ytb.year)
+          equal tbTotals tbsTotals
+      test "monthly trial balance and monthly trial balance summary" do
+        zipFor_ monthlyTrialBalance monthlyTrialBalanceSummary \ymtb ymtbs -> do
+          equal ymtb.year ymtbs.year
+          zipFor_ ymtb.contents ymtbs.contents \mtb mtbs -> do
+            equal mtb.month mtbs.month
+            let
+              mtbTotals = foldTrialBalance mtb.balances
+
+              mtbsTotals = foldTrialBalance mtbs.balances
+            log $ show (fromEnum ymtb.year) <> " " <> show (fromEnum mtb.month)
+            equal mtbTotals mtbsTotals
+      test "monthly trial balance and trial balance" do
+        zipFor_ monthlyTrialBalance trialBalance \ymtb ytb -> do
+          equal ymtb.year ytb.year
+          for_ ytb.contents \tb -> do
+            let
+              mtbTotals =
+                ymtb.contents
+                  # concatMap _.balances
+                  # filter (\mtb -> mtb.account == tb.account)
+                  # foldTrialBalance
+            log $ show (fromEnum ymtb.year) <> " " <> show tb.account
+            equal mtbTotals.debitTotal tb.debitTotal
+            equal mtbTotals.creditTotal tb.creditTotal
+      test "monthly trial balance summary and trial balance summary" do
+        zipFor_ monthlyTrialBalanceSummary trialBalanceSummary \ymtbs ytbs -> do
+          equal ymtbs.year ytbs.year
+          for_ ytbs.contents \tbs -> do
+            let
+              mtbsTotals =
+                ymtbs.contents
+                  # concatMap _.balances
+                  # filter (\mtb -> mtb.category == tbs.category)
+                  # foldTrialBalance
+            log $ show (fromEnum ymtbs.year) <> " " <> show tbs.category
+            equal mtbsTotals.debitTotal tbs.debitTotal
+            equal mtbsTotals.creditTotal tbs.creditTotal
+      test "journal and trial balance and trial balance (trial balance summary)" do
+        zipFor_ journal trialBalance \yj ytb -> do
+          equal yj.year ytb.year
+          let
+            total = sum $ map _.amount yj.contents
+
+            tbTotals = foldTrialBalance ytb.contents
+          log $ show (fromEnum ytb.year)
+          equal total $ or0 tbTotals.debitTotal
+          equal total $ or0 tbTotals.creditTotal
 
 zipFor_ ::
   forall a b f.
@@ -92,3 +148,6 @@ foldTrialBalance xs =
   , debitBalance: foldAmount _.debitBalance xs
   , creditBalance: foldAmount _.creditBalance xs
   }
+
+or0 :: Maybe Money -> Money
+or0 = fromMaybe 0
