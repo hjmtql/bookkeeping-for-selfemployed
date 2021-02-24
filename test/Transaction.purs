@@ -19,7 +19,7 @@ transaction = do
           , debits:
               item { account: Supplies, amount: 5_000 }
                 <> item { account: Commission, amount: 200 }
-          , credit: WithdrawalsByOwner
+          , credit: InvestmentsByOwner
           }
       day 18 do
         -- 複数貸方の取引（1toNの複合仕訳）
@@ -27,12 +27,19 @@ transaction = do
           { summary: "PC買掛"
           , debit: Supplies
           , credits:
-              item { account: WithdrawalsByOwner, amount: 100_000 }
+              item { account: InvestmentsByOwner, amount: 100_000 }
                 <> item { account: AccountsPayable, amount: 50_000 }
           }
       day 20 do
         sales "xxxコーディング" 100_000
     month 3 do
+      day 5 do
+        single
+          { summary: "xxxコーディング一部返金"
+          , debit: Sales
+          , credit: WithdrawalsByOwner
+          , amount: 20_000
+          }
       day 10 do
         sales "yyyサーバー構築" 200_000
       day 30 do
@@ -52,7 +59,7 @@ transaction = do
     single
       { summary: s
       , debit: e
-      , credit: WithdrawalsByOwner
+      , credit: InvestmentsByOwner
       , amount: a
       }
 

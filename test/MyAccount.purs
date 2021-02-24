@@ -18,6 +18,7 @@ import Test.MyCategory (MyCategory(..))
 -- 勘定科目
 data MyAccount
   = WithdrawalsByOwner
+  | InvestmentsByOwner
   | Sales
   | AccountsPayable
   | Rent
@@ -37,6 +38,7 @@ instance showMyAccount :: Show MyAccount where
 -- 勘定科目の分類
 instance accountMyAccount :: Account MyCategory MyAccount where
   cat WithdrawalsByOwner = Assets
+  cat InvestmentsByOwner = Stock
   cat Sales = Revenue
   cat AccountsPayable = Liabilities
   cat Rent = Expenses
@@ -49,6 +51,7 @@ instance accountMyAccount :: Account MyCategory MyAccount where
 -- CSV出力時の名称
 instance toCSVMyAccount :: ToCSV MyAccount where
   toCSV WithdrawalsByOwner = "事業主貸"
+  toCSV InvestmentsByOwner = "事業主借"
   toCSV Sales = "売上"
   toCSV AccountsPayable = "買掛金"
   toCSV Rent = "地代家賃"
