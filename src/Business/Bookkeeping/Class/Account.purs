@@ -6,10 +6,10 @@ module Business.Bookkeeping.Class.Account
 
 import Prelude
 import Business.Bookkeeping.Class.Category (class AccountCategory)
+import Data.Bounded.Generic (class GenericBottom, class GenericTop)
+import Data.Enum.Generic (class GenericBoundedEnum)
 import Data.Generic.EnumHelper (values)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
-import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List as L
 
 -- 勘定科目

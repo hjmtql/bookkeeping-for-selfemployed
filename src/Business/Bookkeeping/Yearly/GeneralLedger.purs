@@ -8,9 +8,9 @@ import Business.Bookkeeping.Class.Account (class Account, accounts)
 import Business.Bookkeeping.Data.Yearly (Yearly)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger, mkGeneralLedger)
 import Business.Bookkeeping.Yearly.Journal (YearlyJournal)
+import Data.Bounded.Generic (class GenericBottom, class GenericTop)
+import Data.Enum.Generic (class GenericBoundedEnum)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
-import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List)
 
 type YearlyGeneralLedger a

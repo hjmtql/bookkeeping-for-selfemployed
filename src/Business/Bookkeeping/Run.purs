@@ -18,10 +18,10 @@ import Business.Bookkeeping.Yearly.Monthly.TrialBalanceSummary (YearlyMonthlyTri
 import Business.Bookkeeping.Yearly.TrialBalance (YearlyTrialBalance, mkYearlyTrialBalance)
 import Business.Bookkeeping.Yearly.TrialBalanceSummary (YearlyTrialBalanceSummary, mkYearlyTrialBalanceSummary)
 import Control.Monad.Writer (execWriter)
+import Data.Bounded.Generic (class GenericBottom, class GenericTop)
 import Data.Either (Either)
+import Data.Enum.Generic (class GenericBoundedEnum)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
-import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List)
 
 generateJournal ::
