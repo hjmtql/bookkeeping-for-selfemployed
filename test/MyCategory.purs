@@ -6,7 +6,7 @@ import Business.Bookkeeping.Helper.Output.JP.TrialBalanceSummary as JP
 import Business.Bookkeeping.Helper.Output.TrialBalanceSummary (class TrialBalanceSummaryOutput)
 import Business.Bookkeeping.Helper.PathName (class PathName)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Show (genericShow)
+import Data.Show.Generic (genericShow)
 import Record.CSV.Printer (printCSVWithOrder)
 import Record.CSV.Printer.ToCSV (class ToCSV)
 

@@ -2,7 +2,6 @@
 , dependencies =
   [ "datetime"
   , "generics-enum-helper"
-  , "generics-rep"
   , "node-fs"
   , "record"
   , "record-csv"

@@ -9,9 +9,9 @@ import Business.Bookkeeping.Class.Category (class AccountCategory)
 import Business.Bookkeeping.Data.Yearly (Yearly)
 import Business.Bookkeeping.TrialBalanceSummary (TrialBalanceSummary, mkTrialBalanceSummary)
 import Business.Bookkeeping.Yearly.GeneralLedger (YearlyGeneralLedger)
+import Data.Bounded.Generic (class GenericBottom, class GenericTop)
+import Data.Enum.Generic (class GenericBoundedEnum)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop)
-import Data.Generic.Rep.Enum (class GenericBoundedEnum)
 import Data.List (List)
 
 type YearlyTrialBalanceSummary c
