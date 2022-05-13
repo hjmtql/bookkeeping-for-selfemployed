@@ -8,7 +8,7 @@ import Test.MyAccount (MyAccount(..))
 transaction :: Transaction MyAccount Unit
 transaction = do
   year 2019 do
-    month 6 do day 1 do sales "zzzデザイン" 50_000
+    month 7 do day 1 do sales "zzzデザイン" 50_000
   year 2020 do
     rent
     month 2 do
@@ -30,7 +30,7 @@ transaction = do
               item { account: InvestmentsByOwner, amount: 100_000 }
                 <> item { account: AccountsPayable, amount: 50_000 }
           }
-      day 20 do
+      day 21 do
         sales "xxxコーディング" 100_000
     month 3 do
       day 5 do
