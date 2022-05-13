@@ -12,8 +12,8 @@ import Business.Bookkeeping.TrialBalance (TrialBalance)
 import Data.Date (month)
 import Data.Functor (mapFlipped)
 import Data.List (List, filter)
-import Data.Symbol (SProxy(..))
 import Record (insert)
+import Type.Proxy (Proxy(..))
 
 -- 月次合計残高試算表
 type MonthlyTrialBalance a
@@ -29,5 +29,5 @@ mkMonthlyTrialBalance gls =
               gl.ledgers
                 # filter (\l -> month l.date == m)
                 # mkTrialBalanceR
-                # insert (SProxy :: SProxy "account") gl.account
+                # insert (Proxy :: Proxy "account") gl.account
         }

@@ -20,9 +20,10 @@ import Control.Monad.Writer (Writer, mapWriter, tell)
 import Data.Bifunctor (rmap)
 import Data.List as L
 import Data.List.NonEmpty as NE
-import Data.Symbol (class IsSymbol, SProxy(..))
+import Data.Symbol (class IsSymbol)
 import Prim.Row as R
 import Record as Record
+import Type.Proxy (Proxy(..))
 
 -- 取引記録用DSL
 type Transaction acc
@@ -50,20 +51,20 @@ type DaySlip a
     }
 
 year :: forall a. Year -> Transaction' (MonthSlip a) Unit -> Transaction' (YearSlip a) Unit
-year = mapInsert (SProxy :: SProxy "year")
+year = mapInsert (Proxy :: Proxy "year")
 
 month :: forall a. Month -> Transaction' (DaySlip a) Unit -> Transaction' (MonthSlip a) Unit
-month = mapInsert (SProxy :: SProxy "month")
+month = mapInsert (Proxy :: Proxy "month")
 
 day :: forall a. Day -> Transaction' (Slip a) Unit -> Transaction' (DaySlip a) Unit
-day = mapInsert (SProxy :: SProxy "day")
+day = mapInsert (Proxy :: Proxy "day")
 
 mapInsert ::
   forall a b k v.
   IsSymbol k =>
   R.Lacks k a =>
   R.Cons k v a b =>
-  SProxy k -> v -> Transaction' { | a } Unit -> Transaction' { | b } Unit
+  Proxy k -> v -> Transaction' { | a } Unit -> Transaction' { | b } Unit
 mapInsert k v = mapWriter (rmap (map (Record.insert k v)))
 
 single :: forall a. Single a -> Transaction' (Slip a) Unit

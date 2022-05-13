@@ -8,8 +8,8 @@ import Business.Bookkeeping.Class.Account (class Account)
 import Business.Bookkeeping.Data.Summary (TrialBalanceR, mkTrialBalanceR)
 import Business.Bookkeeping.GeneralLedger (GeneralLedger)
 import Data.List (List)
-import Data.Symbol (SProxy(..))
 import Record (insert)
+import Type.Proxy (Proxy(..))
 
 -- 合計残高試算表
 type TrialBalance a
@@ -19,4 +19,4 @@ mkTrialBalance :: forall c a. Account c a => List (GeneralLedger a) -> List (Tri
 mkTrialBalance =
   map \gl ->
     mkTrialBalanceR gl.ledgers
-      # insert (SProxy :: SProxy "account") gl.account
+      # insert (Proxy :: Proxy "account") gl.account

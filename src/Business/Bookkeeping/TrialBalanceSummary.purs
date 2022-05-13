@@ -12,8 +12,8 @@ import Data.Bounded.Generic (class GenericBottom, class GenericTop)
 import Data.Enum.Generic (class GenericBoundedEnum)
 import Data.Generic.Rep (class Generic)
 import Data.List (List, concatMap, filter)
-import Data.Symbol (SProxy(..))
 import Record (insert)
+import Type.Proxy (Proxy(..))
 
 -- 勘定科目分類別の合計残高試算表（BSとPL）
 type TrialBalanceSummary c
@@ -34,4 +34,4 @@ mkTrialBalanceSummary gls =
         filter (\gl -> cat gl.account == c) gls
           # concatMap _.ledgers
           # mkTrialBalanceR
-          # insert (SProxy :: SProxy "category") c
+          # insert (Proxy :: Proxy "category") c

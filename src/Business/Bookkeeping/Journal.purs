@@ -11,12 +11,13 @@ import Data.Date (Date, exactDate)
 import Data.Either (Either(..), note)
 import Data.Enum (toEnum)
 import Data.Functor (mapFlipped)
+import Data.FunctorWithIndex (mapWithIndex)
 import Data.List as L
 import Data.List.NonEmpty as NE
 import Data.String (joinWith)
-import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Record as Record
+import Type.Proxy (Proxy(..))
 
 -- 仕訳帳
 type Journal a
@@ -36,12 +37,12 @@ mkJournals =
   where
   dateMod t =
     ( case eDate of
-        Right date -> Right <<< Record.insert (SProxy :: SProxy "date") date
+        Right date -> Right <<< Record.insert (Proxy :: Proxy "date") date
         Left err -> \_ -> Left err
     )
-      <<< Record.delete (SProxy :: SProxy "year")
-      <<< Record.delete (SProxy :: SProxy "month")
-      <<< Record.delete (SProxy :: SProxy "day")
+      <<< Record.delete (Proxy :: Proxy "year")
+      <<< Record.delete (Proxy :: Proxy "month")
+      <<< Record.delete (Proxy :: Proxy "day")
       $ t
     where
     eDate =
@@ -55,12 +56,12 @@ mkJournals =
 
   build =
     L.concat
-      <<< L.mapWithIndex
+      <<< mapWithIndex
           ( \i r ->
               map
-                ( Record.insert (SProxy :: SProxy "no") (i + 1) -- NOTE: starts with 1
-                    <<< Record.insert (SProxy :: SProxy "date") r.date
-                    <<< Record.insert (SProxy :: SProxy "summary") r.summary
+                ( Record.insert (Proxy :: Proxy "no") (i + 1) -- NOTE: starts with 1
+                    <<< Record.insert (Proxy :: Proxy "date") r.date
+                    <<< Record.insert (Proxy :: Proxy "summary") r.summary
                 ) case r.content of
                 Single s ->
                   L.singleton

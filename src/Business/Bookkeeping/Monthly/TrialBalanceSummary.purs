@@ -15,8 +15,8 @@ import Data.Date (month)
 import Data.Enum.Generic (class GenericBoundedEnum)
 import Data.Generic.Rep (class Generic)
 import Data.List (List, concatMap, filter)
-import Data.Symbol (SProxy(..))
 import Record (insert)
+import Type.Proxy (Proxy(..))
 
 -- 勘定科目分類別の月次合計残高試算表（BSとPL）
 type MonthlyTrialBalanceSummary c
@@ -42,5 +42,5 @@ mkMonthlyTrialBalanceSummary gls =
                     # concatMap _.ledgers
                     # filter (\l -> month l.date == m)
                     # mkTrialBalanceR
-                    # insert (SProxy :: SProxy "category") c
+                    # insert (Proxy :: Proxy "category") c
         }
