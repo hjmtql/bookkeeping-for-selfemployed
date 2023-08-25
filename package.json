@@ -8,9 +8,9 @@
   },
   "devDependencies": {
     "node-fs": "^0.1.7",
-    "purescript": "^0.15.4",
+    "purescript": "^0.15.10",
     "purty": "^7.0.0",
-    "rimraf": "^3.0.2",
-    "spago": "^0.20.9"
+    "rimraf": "^5.0.1",
+    "spago": "^0.21.0"
   }
 }
